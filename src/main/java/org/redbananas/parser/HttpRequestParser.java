@@ -5,8 +5,7 @@ import org.redbananas.model.HttpRequest;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class HttpRequestParser {
 
@@ -51,6 +50,26 @@ public class HttpRequestParser {
 
         System.out.println("TOKENS: \n" + tokens);
         // convert tokens to http request
+        ListIterator<String> i = tokens.listIterator();
+
+        httpRequest.setMethod(i.next());
+        httpRequest.setUrl(i.next());
+        httpRequest.setHttpVersion(i.next());
+        httpRequest.setHeaders(new HashSet<Header>());
+
+        while(true){
+            if(i.nextIndex() == tokens.size() -1){
+                break;
+            }
+
+            Header h = new Header();
+            h.setHeaderName(i.next());
+            h.setHeaderValue(i.next());
+            httpRequest.getHeaders().add(h);
+        }
+        if(i.hasNext()){
+            httpRequest.setRequestBody(i.next());
+        }
 
         return httpRequest;
     }

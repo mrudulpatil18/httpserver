@@ -44,9 +44,10 @@ public class Main {
 
         InputStream input = new ByteArrayInputStream(output.toByteArray());
         try {
-            parser.parseHttpRequest(input);
+             HttpRequest req = parser.parseHttpRequest(input);
+            System.out.println(req);
         } catch (IOException e) {
-            System.out.println(e);;
+            System.out.println("e: "+ e);;
         }
 
 
