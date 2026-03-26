@@ -2,12 +2,16 @@ package org.redbananas;
 
 import org.redbananas.model.Header;
 import org.redbananas.model.HttpRequest;
+import org.redbananas.model.HttpResponse;
 import org.redbananas.parser.HttpRequestParser;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -18,40 +22,82 @@ public class Main {
 //        if(sc.nextLine().equals("c")){
 //            setupEchoClient(12345);
 //        }else{
-//            setupEchoServer(12345);
+            setupHttpEchoServer(12345);
 //        }
 
-        HttpRequestParser parser = new HttpRequestParser();
+//        HttpRequestParser parser = new HttpRequestParser();
+//        HttpRequest request = getHttpRequest();
+//
+//        ByteArrayOutputStream output = new ByteArrayOutputStream();
+//        try {
+//            parser.unparseHttpRequest(output, request);
+//        }catch (IOException e){
+//            System.out.println(e);
+//       }
+//
+//        System.out.println("OUTPUT STREAM: \n" + output.toString());
+//        System.out.println("-------------------------------");
+//
+//        InputStream input = new ByteArrayInputStream(output.toByteArray());
+//        try {
+//             HttpRequest req = parser.parseHttpRequest(input);
+//            System.out.println(req);
+//        } catch (IOException e) {
+//            System.out.println("e: "+ e);;
+//        }
+//
+//        System.out.println("ECHO RESPONSE: ");
+//        System.out.println(getEchoResponse(request));
+//
+    }
+
+    private static HttpRequest getHttpRequest() {
         HttpRequest request = new HttpRequest();
         request.setMethod("GET");
         request.setUrl("/");
-        request.setHttpVersion("HTTP1.1");
-        Header header = new Header();
-        header.setHeaderName("but_whyyyyy");
-        header.setHeaderValue("lo_siento_wilson");
-        request.setHeaders(Set.of(header));
+        request.setProtocol("HTTP1.1");
+        Header header1 = new Header();
+        header1.setHeaderName("test1");
+        header1.setHeaderValue("test2");
+        Header header2 = new Header();
+        header2.setHeaderName("test3");
+        header2.setHeaderValue("test4");
+        request.setHeaders(Set.of(header1, header2));
         request.setRequestBody("LALALALALALLALALALALLAALLALALLALALA\n");
+        return request;
+    }
 
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        try {
-            parser.unparseHttpRequest(output, request);
+    private static HttpResponse getEchoResponse(HttpRequest request){
+        HttpResponse response = new HttpResponse();
+        response.setHeaders(request.getHeaders());
+        response.setResponseBody(request.getRequestBody());
+        response.setProtocol(request.getProtocol());
+        response.setResponseCode(200);
+        response.setReasonPhrase("OK");
+//        response.getHeaders().add(new Header("Date", Instant.now().toString()));
+        return response;
+
+    }
+
+    public static void setupHttpEchoServer(int port) {
+        try(ServerSocket sc = new ServerSocket(port)){
+            System.out.println("Listening for clients.....");
+            Socket socket = sc.accept();
+            System.out.println("Connection Established: ");
+            printSocketDetails(socket);
+            try(PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                InputStream in = socket.getInputStream()
+            ){
+                HttpRequestParser httpRequestParser = new HttpRequestParser();
+                HttpRequest request = httpRequestParser.parseHttpRequest(in);
+                System.out.println(request);
+            }
+            catch (IOException e){
+                throw new RuntimeException(e);
+            }
         }catch (IOException e){
-            System.out.println(e);
+            throw new RuntimeException(e);
         }
-
-        System.out.println("OUTPUT STREAM: \n" + output.toString());
-        System.out.println("-------------------------------");
-
-        InputStream input = new ByteArrayInputStream(output.toByteArray());
-        try {
-             HttpRequest req = parser.parseHttpRequest(input);
-            System.out.println(req);
-        } catch (IOException e) {
-            System.out.println("e: "+ e);;
-        }
-
-
-
     }
 
     public static void setupEchoClient(int port){
@@ -103,3 +149,10 @@ public class Main {
         System.out.println("----------------------------------------------------");
     }
 }
+
+
+// TODO:
+// 0. parse with help of content-length
+// 1. create a endpoint at a port
+// 2. add ability to host static files
+// 3. diff content types

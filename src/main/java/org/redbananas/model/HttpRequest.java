@@ -8,9 +8,23 @@ import java.util.Set;
 public class HttpRequest {
     String method;
     String url;
-    String httpVersion;
+    String protocol;
 
     Set<Header> headers;
 
     String requestBody;
 }
+
+// structure of req for ref of HTTP1.1
+//  | METHOD | SP | URL | SP | VERSION | CRLF |
+//  | HEADER_NAME ":" SP HEADER_VALUE | CRLF |
+//  ..........................................
+//  | HEADER_NAME ":" SP HEADER_VALUE | CRLF |
+//  | CRLF |
+//  | MESSAGE_BODY |
+
+
+
+// \s : 32
+// \r : 13
+// \n : 10
