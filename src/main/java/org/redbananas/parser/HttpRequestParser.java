@@ -83,7 +83,7 @@ public class HttpRequestParser {
         writer.write(CR);
         writer.write(LF);
 
-        writer.write(request.getRequestBody().toString();
+        writer.write(request.getRequestBody().toString());
 
         writer.flush();
     }
