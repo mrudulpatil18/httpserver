@@ -12,7 +12,7 @@ public class HttpRequest {
 
     Set<Header> headers;
 
-    String requestBody;
+    byte[] requestBody;
 }
 
 // structure of req for ref of HTTP1.1

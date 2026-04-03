@@ -8,6 +8,7 @@ import org.redbananas.parser.HttpRequestParser;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -63,14 +64,14 @@ public class Main {
         header2.setHeaderName("test3");
         header2.setHeaderValue("test4");
         request.setHeaders(Set.of(header1, header2));
-        request.setRequestBody("LALALALALALLALALALALLAALLALALLALALA\n");
+        request.setRequestBody("LALALALALALLALALALALLAALLALALLALALA".getBytes(StandardCharsets.UTF_8));
         return request;
     }
 
     private static HttpResponse getEchoResponse(HttpRequest request){
         HttpResponse response = new HttpResponse();
         response.setHeaders(request.getHeaders());
-        response.setResponseBody(request.getRequestBody());
+        response.setResponseBody(request.getRequestBody().toString());
         response.setProtocol(request.getProtocol());
         response.setResponseCode(200);
         response.setReasonPhrase("OK");
