@@ -18,12 +18,6 @@ public class HttpRequestParser {
     private final Character CR= '\r';
     private final Character LF = '\n';
 
-    private List<Character> headerSection;
-    private List<Character> bodySection;
-    private List<Character> method;
-    private List<Character> protocol;
-    private List<Character> url;
-
 
     public HttpRequest parseHttpRequest(InputStream inputStream) throws IOException {
         BufferedInputStream bis = new BufferedInputStream(inputStream);

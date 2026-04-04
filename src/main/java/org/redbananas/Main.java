@@ -4,6 +4,7 @@ import org.redbananas.model.Header;
 import org.redbananas.model.HttpRequest;
 import org.redbananas.model.HttpResponse;
 import org.redbananas.parser.HttpRequestParser;
+import org.redbananas.parser.HttpResponseDispatcher;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -71,7 +72,7 @@ public class Main {
     private static HttpResponse getEchoResponse(HttpRequest request){
         HttpResponse response = new HttpResponse();
         response.setHeaders(request.getHeaders());
-        response.setResponseBody(request.getRequestBody().toString());
+        response.setResponseBody(request.getRequestBody());
         response.setProtocol(request.getProtocol());
         response.setResponseCode(200);
         response.setReasonPhrase("OK");
@@ -86,12 +87,16 @@ public class Main {
             Socket socket = sc.accept();
             System.out.println("Connection Established: ");
             printSocketDetails(socket);
-            try(PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            try(OutputStream out = socket.getOutputStream();
                 InputStream in = socket.getInputStream()
             ){
                 HttpRequestParser httpRequestParser = new HttpRequestParser();
                 HttpRequest request = httpRequestParser.parseHttpRequest(in);
                 System.out.println(request);
+                HttpResponse response = StaticFileUtil.returnStaticFile(request);
+                System.out.println(response);
+                HttpResponseDispatcher httpResponseDispatcher = new HttpResponseDispatcher();
+                httpResponseDispatcher.sendResponse(out, response);
             }
             catch (IOException e){
                 throw new RuntimeException(e);
@@ -150,10 +155,3 @@ public class Main {
         System.out.println("----------------------------------------------------");
     }
 }
-
-
-// TODO:
-// 0. parse with help of content-length
-// 1. create a endpoint at a port
-// 2. add ability to host static files
-// 3. diff content types
