@@ -1,4 +1,4 @@
-package org.redbananas;
+package org.redbananas.util;
 
 import org.redbananas.model.Header;
 import org.redbananas.model.HttpRequest;
@@ -21,7 +21,7 @@ public class StaticFileUtil {
         }
     }
 
-    public static HttpResponse returnStaticFile(HttpRequest request){
+    public static HttpResponse generateResponse(HttpRequest request, String filePath){
         HttpResponse response = new HttpResponse();
         response.setProtocol(request.getProtocol());
         response.setResponseCode(200);
@@ -29,7 +29,7 @@ public class StaticFileUtil {
         Header contentTypeHeader = new Header("Content-Type", "text/html");
         Header CharsetHeader = new Header("Content-Encoding", "UTF-8");
         response.setHeaders(Set.of(contentTypeHeader, CharsetHeader));
-        byte[] homePage = readFile("static/home.html");
+        byte[] homePage = readFile(filePath);
         response.setResponseBody(homePage);
         return response;
     }
