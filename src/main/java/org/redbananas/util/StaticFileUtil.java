@@ -5,6 +5,7 @@ import org.redbananas.model.HttpRequest;
 import org.redbananas.model.HttpResponse;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,11 +27,12 @@ public class StaticFileUtil {
         response.setProtocol(request.getProtocol());
         response.setResponseCode(200);
         response.setReasonPhrase("OK");
-        Header contentTypeHeader = new Header("Content-Type", "text/html");
-        Header CharsetHeader = new Header("Content-Encoding", "UTF-8");
-        response.setHeaders(Set.of(contentTypeHeader, CharsetHeader));
-        byte[] homePage = readFile(filePath);
-        response.setResponseBody(homePage);
+        Header contentTypeHeader = new Header("Content-Type", "text/html; charset=utf-8");
+        byte[] file = readFile(filePath);
+        Header contentLengthHeader = new Header("Content-Length", String.valueOf(file.length));
+        response.setHeaders(Set.of(contentTypeHeader, contentLengthHeader));
+        response.setResponseBody(file);
+
         return response;
     }
 

@@ -9,6 +9,7 @@ import org.redbananas.router.RequestRouter;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class Main {
     private static final RequestRouter router = new RequestRouter();
@@ -31,6 +32,7 @@ public class Main {
                 System.out.println(request);
                 HttpResponse response = router.route(request);
                 System.out.println(response);
+                System.out.println(new String(response.getResponseBody(), StandardCharsets.UTF_8));
                 HttpResponseDispatcher httpResponseDispatcher = new HttpResponseDispatcher();
                 httpResponseDispatcher.sendResponse(out, response);
             }
