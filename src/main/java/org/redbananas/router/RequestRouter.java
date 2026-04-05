@@ -17,6 +17,8 @@ public class RequestRouter {
             reqPath = reqPath + "index";
         }else if(reqPath.endsWith(".css")) {
             reqPath = "/css" + reqPath;
+        }else if(reqPath.endsWith(".js")) {
+            reqPath = "/js" + reqPath;
         }
         reqPath = "static" + reqPath;
 
@@ -38,6 +40,7 @@ public class RequestRouter {
         return switch (fileExtension) {
             case ".html" -> new Header("Content-Type", "text/html; charset=utf-8");
             case ".css" -> new Header("Content-Type", "text/css;charset=utf-8");
+            case ".js" -> new Header("Content-Type", "application/javascript;charset=utf-8");
             default -> new Header("Content-Type", "text/plain; charset=utf-8");
         };
     }
