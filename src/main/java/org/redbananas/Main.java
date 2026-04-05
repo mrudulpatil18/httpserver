@@ -21,26 +21,28 @@ public class Main {
     public static void setupHttpServer(int port) {
         try(ServerSocket sc = new ServerSocket(port)){
             System.out.println("Listening for clients.....");
-            Socket socket = sc.accept();
-            System.out.println("Connection Established: ");
-            printSocketDetails(socket);
-            try(OutputStream out = socket.getOutputStream();
-                InputStream in = socket.getInputStream()
-            ){
-                HttpRequestParser httpRequestParser = new HttpRequestParser();
-                HttpRequest request = httpRequestParser.parseHttpRequest(in);
-                System.out.println(request);
-                HttpResponse response = router.route(request);
-                System.out.println(response);
-                System.out.println(new String(response.getResponseBody(), StandardCharsets.UTF_8));
-                HttpResponseDispatcher httpResponseDispatcher = new HttpResponseDispatcher();
-                httpResponseDispatcher.sendResponse(out, response);
-            }
-            catch (IOException e){
-                throw new RuntimeException(e);
+            while(true){
+                Socket socket = sc.accept();
+                System.out.println("Connection Established: ");
+                printSocketDetails(socket);
+                try(OutputStream out = socket.getOutputStream();
+                    InputStream in = socket.getInputStream()
+                ){
+                    HttpRequestParser httpRequestParser = new HttpRequestParser();
+                    HttpRequest request = httpRequestParser.parseHttpRequest(in);
+                    System.out.println(request);
+                    HttpResponse response = router.route(request);
+                    System.out.println(response);
+                    System.out.println(new String(response.getResponseBody(), StandardCharsets.UTF_8));
+                    HttpResponseDispatcher httpResponseDispatcher = new HttpResponseDispatcher();
+                    httpResponseDispatcher.sendResponse(out, response);
+                }
+                catch (IOException e){
+                    System.out.println(e.getMessage());
+                }
             }
         }catch (IOException e){
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
     }
 
