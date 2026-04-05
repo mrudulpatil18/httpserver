@@ -11,10 +11,12 @@ public class RequestRouter {
 
     private String fixPath(HttpRequest request){
         String reqPath = request.getUrl();
-        if(reqPath.equals("/")){
+        if(reqPath.equals("/")) {
             reqPath = reqPath + "index";
+        }else if(reqPath.endsWith(".css")) {
+            reqPath = "/css" + reqPath;
         }
-        reqPath = "static/" + reqPath.substring(1);
+        reqPath = "static" + reqPath;
 
         if(!reqPath.contains(".")){
             reqPath = reqPath + ".html";
@@ -29,12 +31,19 @@ public class RequestRouter {
 //        text/javascript for JavaScript files.
 //        text/markdown for Markdown files.
 //        application/octet-stream for binary files where user action is expected.
-        return null;
+
+        String fileExtension = filePath.substring(filePath.lastIndexOf("."));
+        return switch (fileExtension) {
+            case "html" -> new Header("Content-Type", "text/html; charset=utf-8");
+            case "css" -> new Header("Content-Type", "text/css;charset=utf-8");
+            default -> new Header("Content-Type", "text/plain; charset=utf-8");
+        };
     }
 
     public HttpResponse route(HttpRequest request){
         String filePath = fixPath(request);
-        return StaticFileUtil.generateResponse(request, filePath);
+        Header[] headers = new Header[]{getContentTypeHeader(filePath)};
+        return StaticFileUtil.generateResponse(request, filePath, headers);
     };
 
 }

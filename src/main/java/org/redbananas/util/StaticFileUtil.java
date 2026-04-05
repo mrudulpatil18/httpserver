@@ -1,5 +1,6 @@
 package org.redbananas.util;
 
+import com.sun.net.httpserver.Headers;
 import org.redbananas.model.Header;
 import org.redbananas.model.HttpRequest;
 import org.redbananas.model.HttpResponse;
@@ -22,7 +23,7 @@ public class StaticFileUtil {
         }
     }
 
-    public static HttpResponse generateResponse(HttpRequest request, String filePath){
+    public static HttpResponse generateResponse(HttpRequest request, String filePath, Header[] headers){
         HttpResponse response = new HttpResponse();
         response.setProtocol(request.getProtocol());
         response.setResponseCode(200);
