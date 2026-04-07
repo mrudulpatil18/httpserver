@@ -22,10 +22,9 @@ public class HttpRequestParser {
     public HttpRequest parseHttpRequest(InputStream inputStream) throws IOException {
         BufferedInputStream bis = new BufferedInputStream(inputStream);
         InputStreamReader isr = new InputStreamReader(bis, StandardCharsets.UTF_8);
-        BufferedReader br = new BufferedReader(isr);
         HttpRequest httpRequest = new HttpRequest();
 
-        String currLine = br.readLine();
+        String currLine = readLine(bis);
         String[] arr = currLine.split(String.valueOf(SPACE_DELIMITER));
         httpRequest.setMethod(arr[0]);
         httpRequest.setUrl(arr[1]);
@@ -33,7 +32,7 @@ public class HttpRequestParser {
 
         Set<Header> headers = new HashSet<>();
         while (true) {
-            currLine = br.readLine();
+            currLine = readLine(bis);
             if(currLine.isEmpty()) break;
 
             arr = currLine.split(String.valueOf(COLON_DELIMITER));
@@ -53,6 +52,20 @@ public class HttpRequestParser {
         }
         return httpRequest;
 
+    }
+
+    private String readLine(BufferedInputStream bis) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        while (true) {
+            char c = (char) bis.read();
+            if(c == CR) {
+                continue;
+            }if(c == LF) {
+                break;
+            }
+            sb.append(c);
+        }
+        return sb.toString();
     }
 
 

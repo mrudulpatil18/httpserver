@@ -46,9 +46,16 @@ public class RequestRouter {
     }
 
     public HttpResponse route(HttpRequest request) throws IOException {
-        String filePath = fixPath(request);
-        Header[] headers = new Header[]{getContentTypeHeader(filePath)};
-        return StaticFileUtil.generateResponse(request, filePath, headers);
+
+        if(request.getMethod().equals("GET")) {
+            String filePath = fixPath(request);
+            Header[] headers = new Header[]{getContentTypeHeader(filePath)};
+            return StaticFileUtil.generateResponse(request, filePath, headers);
+        }
+        else if(request.getMethod().equals("POST")) {
+            System.out.println(request);
+        }
+        return null;
     }
 
 }

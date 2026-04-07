@@ -15,8 +15,14 @@ import java.util.stream.Stream;
 public class StaticFileUtil {
 
     private static byte[] readFile(String serverPath) throws IOException {
+        try{
         Path path = Paths.get(serverPath);
         return Files.readAllBytes(path);
+        } catch(Exception e){
+            System.out.println("Error reading file " + serverPath + ": " + e.getMessage());
+            return Files.readAllBytes(Paths.get("static/404.html"));
+        }
+        // TODO: for fallback page make sure to use text/html
     }
 
     public static HttpResponse generateResponse(HttpRequest request, String filePath, Header[] headers) throws IOException {
