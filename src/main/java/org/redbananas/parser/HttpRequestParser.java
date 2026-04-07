@@ -21,7 +21,6 @@ public class HttpRequestParser {
 
     public HttpRequest parseHttpRequest(InputStream inputStream) throws IOException {
         BufferedInputStream bis = new BufferedInputStream(inputStream);
-        InputStreamReader isr = new InputStreamReader(bis, StandardCharsets.UTF_8);
         HttpRequest httpRequest = new HttpRequest();
 
         String currLine = readLine(bis);
