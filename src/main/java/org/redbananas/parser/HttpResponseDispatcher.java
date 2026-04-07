@@ -15,9 +15,6 @@ public class HttpResponseDispatcher {
     private final Character LF = '\n';
 
     public void sendResponse(OutputStream outputStream, HttpResponse res) throws IOException {
-//        PrintWriter out = new PrintWriter(outputStream, false);
-//        out.println("HTTP/1.1 200 OK");
-
             outputStream.write((res.getProtocol() + SPACE_DELIMITER + res.getResponseCode() + SPACE_DELIMITER + res.getReasonPhrase() + CR + LF).getBytes());
             for(Header header : res.getHeaders()){
                 outputStream.write((header.getHeaderName() + COLON_DELIMITER + SPACE_DELIMITER + header.getHeaderValue() + CR + LF).getBytes());

@@ -7,6 +7,7 @@ import org.redbananas.model.HttpRequest;
 import org.redbananas.model.HttpResponse;
 
 import java.io.IOException;
+import java.util.Set;
 
 @NoArgsConstructor
 public class RequestRouter {
@@ -53,9 +54,16 @@ public class RequestRouter {
             return StaticFileUtil.generateResponse(request, filePath, headers);
         }
         else if(request.getMethod().equals("POST")) {
-            System.out.println(request);
+            // TODO: handle POST Reqs, potentially use and add sqlite
+            HttpResponse res = new HttpResponse();
+            res.setProtocol("HTTP/1.1");
+            res.setResponseCode(303);
+            res.setReasonPhrase("See Other");
+            res.setHeaders(Set.of(new Header("Location", "/page1"), new Header("Content-Length", "0")));
+            res.setResponseBody("randomValue".getBytes());
+            return res;
         }
-        return null;
+        return new HttpResponse();
     }
 
 }
