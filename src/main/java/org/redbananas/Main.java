@@ -14,20 +14,20 @@ import java.nio.charset.StandardCharsets;
 public class Main {
     private static final RequestRouter router = new RequestRouter();
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
         setupHttpServer(12345);
     }
 
     public static void setupHttpServer(int port) {
-        try(ServerSocket sc = new ServerSocket(port)){
+        try (ServerSocket sc = new ServerSocket(port)) {
             System.out.println("Listening for clients.....");
-            while(true){
+            while (true) {
                 Socket socket = sc.accept();
                 System.out.println("Connection Established: ");
                 printSocketDetails(socket);
-                try(OutputStream out = socket.getOutputStream();
-                    InputStream in = socket.getInputStream()
-                ){
+                try (OutputStream out = socket.getOutputStream();
+                     InputStream in = socket.getInputStream()
+                ) {
                     HttpRequestParser httpRequestParser = new HttpRequestParser();
                     HttpRequest request = httpRequestParser.parseHttpRequest(in);
                     System.out.println(request);
@@ -36,17 +36,16 @@ public class Main {
                     System.out.println(new String(response.getResponseBody(), StandardCharsets.UTF_8));
                     HttpResponseDispatcher httpResponseDispatcher = new HttpResponseDispatcher();
                     httpResponseDispatcher.sendResponse(out, response);
-                }
-                catch (IOException e){
+                } catch (IOException e) {
                     System.out.println(e.getMessage());
                 }
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public static void printSocketDetails(Socket s){
+    public static void printSocketDetails(Socket s) {
         System.out.println("InetAddress: " + s.getInetAddress());
         System.out.println("LocalPort: " + s.getLocalPort());
         System.out.println("LocalSocketAddress: " + s.getLocalSocketAddress());

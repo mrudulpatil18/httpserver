@@ -15,9 +15,8 @@ public class HttpRequestParser {
 
     private final Character SPACE_DELIMITER = ' ';
     private final Character COLON_DELIMITER = ':';
-    private final Character CR= '\r';
+    private final Character CR = '\r';
     private final Character LF = '\n';
-
 
     public HttpRequest parseHttpRequest(InputStream inputStream) throws IOException {
         BufferedInputStream bis = new BufferedInputStream(inputStream);
@@ -32,7 +31,7 @@ public class HttpRequestParser {
         Set<Header> headers = new HashSet<>();
         while (true) {
             currLine = readLine(bis);
-            if(currLine.isEmpty()) break;
+            if (currLine.isEmpty()) break;
 
             arr = currLine.split(String.valueOf(COLON_DELIMITER));
             headers.add(new Header(arr[0].trim(), arr[1].trim()));
@@ -44,7 +43,7 @@ public class HttpRequestParser {
                         .filter(h -> h.getHeaderName().equalsIgnoreCase("Content-Length"))
                         .findFirst();
 
-        if(contentLengthHeader.isPresent()) {
+        if (contentLengthHeader.isPresent()) {
             int length = Integer.parseInt(contentLengthHeader.get().getHeaderValue());
             byte[] body = bis.readNBytes(length);
             httpRequest.setRequestBody(body);
@@ -57,9 +56,10 @@ public class HttpRequestParser {
         StringBuilder sb = new StringBuilder();
         while (true) {
             char c = (char) bis.read();
-            if(c == CR) {
+            if (c == CR) {
                 continue;
-            }if(c == LF) {
+            }
+            if (c == LF) {
                 break;
             }
             sb.append(c);
@@ -78,7 +78,7 @@ public class HttpRequestParser {
         writer.write(CR);
         writer.write(LF);
 
-        for(Header header : request.getHeaders()){
+        for (Header header : request.getHeaders()) {
             writer.write(header.getHeaderName());
             writer.write(COLON_DELIMITER);
             writer.write(SPACE_DELIMITER);
@@ -93,5 +93,6 @@ public class HttpRequestParser {
 
         writer.flush();
     }
+
 }
 

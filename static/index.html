@@ -9,18 +9,29 @@
 </head>
 <body>
 
+
+<!-- TODO: add a home page with recent items-->
+<!-- TODO: add add item page ( url, text, snippets) -->
+<!-- TODO: add upload page-->
+
 <h1>Hello, world! - INDEX</h1>
 <p>This is a basic HTML5 starter template.</p>
 
-<form action="/add-text" method="POST">
-    <label for="text">Text</label>
-    <input type="text" name="text" id="text">
+<form action="/add-note" method="POST">
+    <label for="title">Title</label>
+    <input type="text" name="title" id="title">
 
-    <label for="url">URL</label>
-    <input type="text" name="url" id="url">
+    <label for="content">Content</label>
+    <input type="text" name="content" id="content">
+
+    <label for="type">Type</label>
+    <select name="type" id="type">
+        <option value="text">text</option>
+        <option value="url">url</option>
+        <option value="snippet">snippet</option>
+    </select>
 
     <button type="submit">Submit</button>
-
 </form>
 
 <!-- Link to your JavaScript file -->

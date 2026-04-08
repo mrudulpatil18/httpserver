@@ -1,35 +1,40 @@
 package org.redbananas.router;
 
-import lombok.NoArgsConstructor;
-import org.redbananas.model.Header;
+import org.redbananas.model.*;
+import org.redbananas.service.DbService;
 import org.redbananas.util.StaticFileUtil;
-import org.redbananas.model.HttpRequest;
-import org.redbananas.model.HttpResponse;
 
 import java.io.IOException;
-import java.util.Set;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
-@NoArgsConstructor
 public class RequestRouter {
 
-    private String fixPath(HttpRequest request){
+    DbService dbService;
+
+    public RequestRouter() {
+        this.dbService = new DbService();
+    }
+
+    private String fixPath(HttpRequest request) {
         String reqPath = request.getUrl();
-        if(reqPath.equals("/")) {
+        if (reqPath.equals("/")) {
             reqPath = reqPath + "index";
-        }else if(reqPath.endsWith(".css")) {
+        } else if (reqPath.endsWith(".css")) {
             reqPath = "/css" + reqPath;
-        }else if(reqPath.endsWith(".js")) {
+        } else if (reqPath.endsWith(".js")) {
             reqPath = "/js" + reqPath;
         }
         reqPath = "static" + reqPath;
 
-        if(!reqPath.contains(".")){
+        if (!reqPath.contains(".")) {
             reqPath = reqPath + ".html";
         }
         return reqPath;
     }
 
-    private Header getContentTypeHeader(String filePath){
+    private Header getContentTypeHeader(String filePath) {
 //        text/html for HTML documents.
 //        text/plain for plain text.
 //        text/css for Cascading Style Sheets.
@@ -48,22 +53,61 @@ public class RequestRouter {
 
     public HttpResponse route(HttpRequest request) throws IOException {
 
-        if(request.getMethod().equals("GET")) {
+        if (request.getMethod().equals("GET")) {
             String filePath = fixPath(request);
             Header[] headers = new Header[]{getContentTypeHeader(filePath)};
             return StaticFileUtil.generateResponse(request, filePath, headers);
+        } else if (request.getMethod().equals("POST")) {
+            return handleAddNote(request);
         }
-        else if(request.getMethod().equals("POST")) {
-            // TODO: handle POST Reqs, potentially use and add sqlite
-            HttpResponse res = new HttpResponse();
-            res.setProtocol("HTTP/1.1");
-            res.setResponseCode(303);
-            res.setReasonPhrase("See Other");
-            res.setHeaders(Set.of(new Header("Location", "/page1"), new Header("Content-Length", "0")));
-            res.setResponseBody("randomValue".getBytes());
-            return res;
+        HttpResponse res = new HttpResponse();
+        res.setProtocol("HTTP/1.1");
+        res.setResponseCode(303);
+        res.setReasonPhrase("See Other");
+        res.setHeaders(Set.of(new Header("Location", "/page1"), new Header("Content-Length", "0")));
+        res.setResponseBody("randomValue".getBytes());
+        return res;
+    }
+
+    private HttpResponse handleAddNote(HttpRequest request) {
+        var data = getFormData(request);
+        Note note = new Note();
+        note.setId(UUID.randomUUID().toString());
+        note.setContent(data.get("content"));
+        note.setTitle(data.get("title"));
+        note.setType(TextNoteType.valueOf(data.get("type").toUpperCase()));
+        String noteId = dbService.addNote(note);
+
+        HttpResponse res = new HttpResponse();
+
+        res.setProtocol("HTTP/1.1");
+        res.setResponseCode(303);
+        res.setReasonPhrase("See Other");
+        res.setHeaders(Set.of(new Header("Location", "/page1"), new Header("Content-Length", "0")));
+        res.setResponseBody(noteId.getBytes());
+        return res;
+
+    }
+
+    Map<String, String> getFormData(HttpRequest request) {
+        Map<String, String> formData = new HashMap<>();
+
+        String body = new String(request.getRequestBody(), StandardCharsets.UTF_8);
+
+        for (String pair : body.split("&")) {
+            if (pair.isEmpty()) continue;
+
+            String[] parts = pair.split("=", 2);
+
+            String key = URLDecoder.decode(parts[0], StandardCharsets.UTF_8);
+            String value = parts.length > 1
+                    ? URLDecoder.decode(parts[1], StandardCharsets.UTF_8)
+                    : "";
+
+            formData.put(key, value);
         }
-        return new HttpResponse();
+
+        return formData;
     }
 
 }
