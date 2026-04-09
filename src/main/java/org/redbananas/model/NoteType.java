@@ -1,6 +1,6 @@
 package org.redbananas.model;
 
-public enum TextNoteType {
+public enum NoteType {
     NOTE,
     SNIPPET,
     LINK,

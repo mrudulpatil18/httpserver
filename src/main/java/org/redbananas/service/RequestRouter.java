@@ -1,12 +1,12 @@
-package org.redbananas.router;
+package org.redbananas.service;
 
 import org.redbananas.model.*;
-import org.redbananas.service.DbService;
 import org.redbananas.util.StaticFileUtil;
 
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class RequestRouter {
@@ -35,12 +35,12 @@ public class RequestRouter {
     }
 
     private Header getContentTypeHeader(String filePath) {
-//        text/html for HTML documents.
-//        text/plain for plain text.
-//        text/css for Cascading Style Sheets.
-//        text/javascript for JavaScript files.
-//        text/markdown for Markdown files.
-//        application/octet-stream for binary files where user action is expected.
+        // text/html for HTML documents.
+        // text/plain for plain text.
+        // text/css for Cascading Style Sheets.
+        // text/javascript for JavaScript files.
+        // text/markdown for Markdown files.
+        // application/octet-stream for binary files where user action is expected.
 
         String fileExtension = filePath.substring(filePath.lastIndexOf("."));
         return switch (fileExtension) {
@@ -58,7 +58,11 @@ public class RequestRouter {
             Header[] headers = new Header[]{getContentTypeHeader(filePath)};
             return StaticFileUtil.generateResponse(request, filePath, headers);
         } else if (request.getMethod().equals("POST")) {
-            return handleAddNote(request);
+            if(request.getUrl().equals("/note")) {
+                return handleAddNote(request);
+            }else if(request.getUrl().equals("/upload")) {
+                return handleUploadNote(request);
+            }
         }
         HttpResponse res = new HttpResponse();
         res.setProtocol("HTTP/1.1");
@@ -71,11 +75,8 @@ public class RequestRouter {
 
     private HttpResponse handleAddNote(HttpRequest request) {
         var data = getFormData(request);
-        Note note = new Note();
-        note.setId(UUID.randomUUID().toString());
-        note.setTextContent(data.get("content"));
-        note.setTitle(data.get("title"));
-        note.setType(TextNoteType.valueOf(data.get("type").toUpperCase()));
+        Note note = generateTextNote(data);
+
         String noteId = dbService.addNote(note);
 
         HttpResponse res = new HttpResponse();
@@ -83,10 +84,13 @@ public class RequestRouter {
         res.setProtocol("HTTP/1.1");
         res.setResponseCode(303);
         res.setReasonPhrase("See Other");
-        res.setHeaders(Set.of(new Header("Location", "/page1"), new Header("Content-Length", "0")));
+        res.setHeaders(Set.of(new Header("Location", "/"), new Header("Content-Length", "0")));
         res.setResponseBody(noteId.getBytes());
         return res;
+    }
 
+    private HttpResponse handleUploadNote(HttpRequest request) {
+        return null;
     }
 
     Map<String, String> getFormData(HttpRequest request) {
@@ -96,18 +100,33 @@ public class RequestRouter {
 
         for (String pair : body.split("&")) {
             if (pair.isEmpty()) continue;
-
             String[] parts = pair.split("=", 2);
 
             String key = URLDecoder.decode(parts[0], StandardCharsets.UTF_8);
             String value = parts.length > 1
                     ? URLDecoder.decode(parts[1], StandardCharsets.UTF_8)
                     : "";
-
             formData.put(key, value);
         }
-
         return formData;
     }
 
+    Note generateTextNote(Map<String, String> data) {
+        Note note = new Note();
+        note.setId(UUID.randomUUID().toString());
+        note.setTextContent(data.get("content"));
+        note.setTitle(data.get("title"));
+        note.setType(NoteType.valueOf(data.get("type").toUpperCase()));
+        note.setContentType("text/plain");
+
+        note.setCreatedAt(LocalDateTime.now());
+        note.setModifiedAt(note.getCreatedAt());
+        return note;
+    }
 }
+
+
+// /post add-note - note, link, snippet - done
+// TODO: /post upload-file
+// TODO: get and show notes on homepage
+// TODO: /get/item/:id

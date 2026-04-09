@@ -4,7 +4,7 @@ import org.redbananas.model.HttpRequest;
 import org.redbananas.model.HttpResponse;
 import org.redbananas.parser.HttpRequestParser;
 import org.redbananas.parser.HttpResponseDispatcher;
-import org.redbananas.router.RequestRouter;
+import org.redbananas.service.RequestRouter;
 
 import java.io.*;
 import java.net.ServerSocket;

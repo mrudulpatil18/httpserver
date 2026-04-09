@@ -2,12 +2,12 @@ package org.redbananas.model;
 
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 public class Note {
     String id;
-    TextNoteType type;
+    NoteType type;
     String title;
     String textContent;
 
@@ -18,8 +18,8 @@ public class Note {
     String filePath;
     String originalFileName;
 
-    Date createdAt;
-    Date modifiedAt;
+    LocalDateTime createdAt;
+    LocalDateTime modifiedAt;
 
     // either filepath or textcontent
 }

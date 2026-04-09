@@ -17,14 +17,14 @@
 </header>
 
 <main>
-    <form action="/add-note" method="POST">
+    <form action="/note" method="POST">
         <label for="title">Title</label>
         <input type="text" id="title" name="title" required>
 
         <label for="type">Type</label>
         <select id="type" name="type">
-            <option value="text">Text</option>
-            <option value="url">URL</option>
+            <option value="note">Note</option>
+            <option value="link">Link</option>
             <option value="snippet">Snippet</option>
         </select>
 
