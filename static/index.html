@@ -1,40 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index</title>
-    <!-- Link to your CSS file -->
-    <link rel="stylesheet" href="/style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes – Home</title>
+    <link rel="stylesheet" href="simple.min.css" />
 </head>
 <body>
 
+<header>
+    <h1>Notes</h1>
+    <nav>
+        <a href="/add-note">Add Note</a>
+        <a href="/upload">Upload File</a>
+    </nav>
+</header>
 
-<!-- TODO: add a home page with recent items-->
-<!-- TODO: add add item page ( url, text, snippets) -->
-<!-- TODO: add upload page-->
+<main>
+    <h2>Recently Added</h2>
 
-<h1>Hello, world! - INDEX</h1>
-<p>This is a basic HTML5 starter template.</p>
+    <!-- Example items. Replace with server-rendered list -->
+    <article>
+        <h3>Understanding Redis Streams</h3>
+        <p>Type: Snippet</p>
+        <pre><code>XADD mystream * key value</code></pre>
+    </article>
 
-<form action="/add-note" method="POST">
-    <label for="title">Title</label>
-    <input type="text" name="title" id="title">
+    <article>
+        <h3>Cool Article on OS Design</h3>
+        <p>Type: URL</p>
+        <p><a href="#">https://example.com/os-design</a></p>
+    </article>
 
-    <label for="content">Content</label>
-    <input type="text" name="content" id="content">
+    <article>
+        <h3>Project Notes</h3>
+        <p>Type: Text</p>
+        <p>Remember to handle edge cases in the parser.</p>
+    </article>
 
-    <label for="type">Type</label>
-    <select name="type" id="type">
-        <option value="text">text</option>
-        <option value="url">url</option>
-        <option value="snippet">snippet</option>
-    </select>
+    <article>
+        <h3>design.pdf</h3>
+        <p>Type: File</p>
+        <p><a href="#">Download</a></p>
+    </article>
 
-    <button type="submit">Submit</button>
-</form>
+</main>
 
-<!-- Link to your JavaScript file -->
-<script src="script.js"></script>
+<footer>
+    <p>Minimal notes app</p>
+</footer>
+
 </body>
 </html>

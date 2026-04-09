@@ -12,9 +12,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class DbService {
 
-    // TODO: refactor functions
-    // TODO: integrate SQLite
-
     Connection conn;
     String dbPath = Paths.get("my.db").toAbsolutePath().toString();
     final String url = "jdbc:sqlite:" + dbPath;
@@ -38,7 +35,7 @@ public class DbService {
             var psmt = conn.prepareStatement(sql);
             psmt.setString(1, note.getId());
             psmt.setString(2, note.getTitle());
-            psmt.setString(3, note.getContent());
+            psmt.setString(3, note.getTextContent());
             psmt.setString(4, note.getType().name());
             psmt.executeUpdate();
             return note.getId();

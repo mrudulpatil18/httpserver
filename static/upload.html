@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload File</title>
+    <link rel="stylesheet" href="simple.min.css" />
+</head>
+<body>
+
+<header>
+    <h1>Upload File</h1>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/add-note">Add Note</a>
+    </nav>
+</header>
+
+<main>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <label for="file">Choose file</label>
+        <input type="file" id="file" name="file" required>
+
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" placeholder="Optional title">
+
+        <button type="submit">Upload</button>
+    </form>
+</main>
+
+</body>
+</html>

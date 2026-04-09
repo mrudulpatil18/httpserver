@@ -1,7 +1,8 @@
 package org.redbananas.model;
 
 public enum TextNoteType {
-    TEXT,
+    NOTE,
     SNIPPET,
-    URL
+    LINK,
+    FILE
 }

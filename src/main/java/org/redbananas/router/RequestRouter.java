@@ -73,7 +73,7 @@ public class RequestRouter {
         var data = getFormData(request);
         Note note = new Note();
         note.setId(UUID.randomUUID().toString());
-        note.setContent(data.get("content"));
+        note.setTextContent(data.get("content"));
         note.setTitle(data.get("title"));
         note.setType(TextNoteType.valueOf(data.get("type").toUpperCase()));
         String noteId = dbService.addNote(note);
