@@ -3,11 +3,13 @@ package org.redbananas.service;
 import lombok.AllArgsConstructor;
 import org.redbananas.model.Note;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.UUID;
 
 @AllArgsConstructor
 public class DbService {
@@ -20,13 +22,18 @@ public class DbService {
         this.conn = setupSqliteDB(url);
     }
 
-    private void saveFile(byte[] ar) {
-        //do action
-    }
+    public String saveFile(byte[] arr, String filePath) {
+        Path path = Paths.get(filePath);
 
-    private String addFile(byte[] arr, String fileType) {
-        saveFile(arr);
-        return UUID.randomUUID().toString();
+        try {
+            Files.createDirectories(path.getParent());
+            Files.write(path, arr);
+            return path.toAbsolutePath().toString();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save fil: " + filePath, e);
+        }
+
+
     }
 
     public String addNote(Note note) {

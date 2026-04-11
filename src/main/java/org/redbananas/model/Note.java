@@ -13,7 +13,7 @@ public class Note {
 
     String contentType; //MIME Type
 
-    // int sizeBytes;
+     int sizeBytes; // for files
 
     String filePath;
     String originalFileName;
