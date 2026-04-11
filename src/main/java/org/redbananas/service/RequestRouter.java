@@ -40,6 +40,9 @@ public class RequestRouter {
     public HttpResponse route(HttpRequest request) throws IOException {
 
         if (request.getMethod().equals("GET")) {
+            if(request.getUrl().startsWith("/download")){
+                return handleDownload(request);
+            }
             String filePath = fixPath(request);
             Header[] headers = new Header[]{getContentTypeHeader(filePath)};
             return StaticFileUtil.generateResponse(request, filePath, headers);
@@ -57,6 +60,46 @@ public class RequestRouter {
         res.setHeaders(Set.of(new Header("Location", "/page1"), new Header("Content-Length", "0")));
         res.setResponseBody("randomValue".getBytes());
         return res;
+    }
+
+    private HttpResponse handleDownload(HttpRequest request) {
+
+        String noteId = getQueryParam(request.getUrl(), "id");
+        Note note = dbService.getNote(noteId);
+
+        byte[] fileContent = dbService.readFile(note.getFilePath());
+
+        HttpResponse res = new HttpResponse();
+        res.setProtocol("HTTP/1.1");
+        res.setResponseCode(200);
+        res.setReasonPhrase("OK");
+
+        Set<Header> resHeaders = new HashSet<>();
+        resHeaders.add(new Header("Content-Type", note.getContentType()));
+        resHeaders.add(new Header("Content-Length", String.valueOf(note.getSizeBytes())));
+        resHeaders.add(new Header("Content-Disposition", "attachment; filename=\"" + note.getOriginalFileName() + "\""));
+        res.setHeaders(resHeaders);
+
+
+        res.setHeaders(resHeaders);
+        res.setResponseBody(fileContent);
+
+        return res;
+
+    }
+
+    private String getQueryParam(String url, String key){
+        int i = url.indexOf("?");
+        if(i == -1){return null;}
+
+        String query = url.substring(i+1);
+        for(String param : query.split("&")){
+            String[] params = param.split("=");
+            if(params.length == 2 && params[0].equals(key)){
+                return params[1];
+            }
+        }
+        return null;
     }
 
     private HttpResponse handleAddNote(HttpRequest request) {

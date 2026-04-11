@@ -9,7 +9,6 @@ import org.redbananas.service.RequestRouter;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 public class Main {
     private static final RequestRouter router = new RequestRouter();
@@ -23,17 +22,20 @@ public class Main {
             System.out.println("Listening for clients.....");
             while (true) {
                 Socket socket = sc.accept();
-                System.out.println("Connection Established: ");
-                printSocketDetails(socket);
+//                System.out.println("Connection Established: ");
+//                printSocketDetails(socket);
                 try (OutputStream out = socket.getOutputStream();
                      InputStream in = socket.getInputStream()
                 ) {
                     HttpRequestParser httpRequestParser = new HttpRequestParser();
                     HttpRequest request = httpRequestParser.parseHttpRequest(in);
-                    System.out.println(request);
+//                    System.out.println("--------------------------");
+//                    System.out.println("REQUEST: ");
+//                    System.out.println(request.log());
                     HttpResponse response = router.route(request);
-                    System.out.println(response);
-                    System.out.println(new String(response.getResponseBody(), StandardCharsets.UTF_8));
+                    System.out.println("--------------------------");
+//                    System.out.println("RESPONSE: ");
+//                    System.out.println(response.log());
                     HttpResponseDispatcher httpResponseDispatcher = new HttpResponseDispatcher();
                     httpResponseDispatcher.sendResponse(out, response);
                 } catch (IOException e) {
