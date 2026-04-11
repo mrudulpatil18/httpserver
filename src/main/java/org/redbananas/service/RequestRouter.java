@@ -1,8 +1,10 @@
 package org.redbananas.service;
 
 import org.redbananas.model.*;
+import org.redbananas.parser.MultipartBodyParser;
 import org.redbananas.util.StaticFileUtil;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -34,22 +36,6 @@ public class RequestRouter {
         return reqPath;
     }
 
-    private Header getContentTypeHeader(String filePath) {
-        // text/html for HTML documents.
-        // text/plain for plain text.
-        // text/css for Cascading Style Sheets.
-        // text/javascript for JavaScript files.
-        // text/markdown for Markdown files.
-        // application/octet-stream for binary files where user action is expected.
-
-        String fileExtension = filePath.substring(filePath.lastIndexOf("."));
-        return switch (fileExtension) {
-            case ".html" -> new Header("Content-Type", "text/html; charset=utf-8");
-            case ".css" -> new Header("Content-Type", "text/css;charset=utf-8");
-            case ".js" -> new Header("Content-Type", "application/javascript;charset=utf-8");
-            default -> new Header("Content-Type", "text/plain; charset=utf-8");
-        };
-    }
 
     public HttpResponse route(HttpRequest request) throws IOException {
 
@@ -79,19 +65,98 @@ public class RequestRouter {
 
         String noteId = dbService.addNote(note);
 
+        return redirectHome(noteId);
+    }
+
+    private HttpResponse handleUploadNote(HttpRequest request) {
+        MultipartBodyParser multipartBodyParser = new MultipartBodyParser(request);
+        var contents = multipartBodyParser.parse();
+        Note note = new Note();
+        String extension = "";
+        String filetype = "";
+        byte[] fileBytes = new byte[0];
+        for(FormDataBody part: contents) {
+            String fileName = getOriginalFileName(part.getHeaders());
+            if(fileName != null) {
+                note.setOriginalFileName(fileName);
+                extension = fileName.split("\\.")[1];
+                fileBytes = part.getBody();
+                note.setSizeBytes(fileBytes.length);
+                filetype = getContentType(part.getHeaders());
+                System.out.println("Uploading file: " + fileName);
+            }
+
+            if(isTitle(part.getHeaders())) {
+                note.setTitle(new String(part.getBody(), StandardCharsets.UTF_8));
+            }
+        }
+
+
+        note.setId(UUID.randomUUID().toString());
+        note.setType(NoteType.FILE);
+        note.setFilePath("data/" + note.getId() + "." + extension );
+        note.setCreatedAt(LocalDateTime.now());
+        note.setModifiedAt(note.getCreatedAt());
+        note.setContentType(filetype);
+
+        dbService.saveFile(fileBytes, note.getFilePath());
+
+        String noteId = dbService.addNote(note);
+
+        return redirectHome(noteId);
+    }
+
+    private HttpResponse redirectHome(String note){
         HttpResponse res = new HttpResponse();
 
         res.setProtocol("HTTP/1.1");
         res.setResponseCode(303);
         res.setReasonPhrase("See Other");
         res.setHeaders(Set.of(new Header("Location", "/"), new Header("Content-Length", "0")));
-        res.setResponseBody(noteId.getBytes());
+        res.setResponseBody(note.getBytes());
         return res;
+
     }
 
-    private HttpResponse handleUploadNote(HttpRequest request) {
+    private boolean isTitle(Set<Header> headers){
+        for(Header header: headers){
+            if(header.getHeaderName().equalsIgnoreCase("Content-Disposition")){
+                if(header.getHeaderValue().contains("title")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private String getOriginalFileName(Set<Header> headers) {
+        for (Header header : headers) {
+            if(header.getHeaderName().equalsIgnoreCase("Content-Disposition")) {
+                String s = header.getHeaderValue();
+                int i = s.indexOf("filename=");
+                if(i==-1)return null;
+
+                String fn = s.substring(i+9).trim();
+
+                if(fn.startsWith("\"") && fn.endsWith("\"")){
+                    fn = fn.substring(1, fn.length()-1);
+                }
+
+                return fn;
+            }
+        }
         return null;
     }
+
+    private String getContentType(Set<Header> headers) {
+        for (Header header : headers) {
+            if(header.getHeaderName().equalsIgnoreCase("Content-Type")) {
+                return header.getHeaderValue();
+            }
+        }
+        return "";
+    }
+
 
     Map<String, String> getFormData(HttpRequest request) {
         Map<String, String> formData = new HashMap<>();
@@ -123,10 +188,22 @@ public class RequestRouter {
         note.setModifiedAt(note.getCreatedAt());
         return note;
     }
+
+
+
+    private Header getContentTypeHeader(String filePath) {
+
+        String fileExtension = filePath.substring(filePath.lastIndexOf("."));
+        return switch (fileExtension) {
+            case ".html" -> new Header("Content-Type", "text/html; charset=utf-8");
+            case ".css" -> new Header("Content-Type", "text/css;charset=utf-8");
+            case ".js" -> new Header("Content-Type", "application/javascript;charset=utf-8");
+            default -> new Header("Content-Type", "text/plain; charset=utf-8");
+        };
+    }
 }
 
 
-// /post add-note - note, link, snippet - done
-// TODO: /post upload-file
 // TODO: get and show notes on homepage
 // TODO: /get/item/:id
+// TODO: handle edge cases in body parsing ( meh meh )
