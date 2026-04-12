@@ -60,7 +60,7 @@ public class StaticFileUtil {
         }
         if(notesHtml.isEmpty()){
             htmlFileContents = htmlFileContents.replace("${NOTES_PLACEHOLDER}", " <div class=\"alert alert-info\">\n" +
-                    "        The page you are looking for does not exist.\n" +
+                    "        Add Notes to display.\n" +
                     "    </div>");
         }else{
             htmlFileContents = htmlFileContents.replace("${NOTES_PLACEHOLDER}", notesHtml);
@@ -72,25 +72,27 @@ public class StaticFileUtil {
         return response;
     }
 
-    public static HttpResponse generateNotePage(HttpRequest request, String filePath, Header[] headers, Note note) throws IOException {
-        // TODO:
+    public static HttpResponse generateNotePage(HttpRequest request,  Header[] headers, Note note) throws IOException {
         HttpResponse response = new HttpResponse();
         response.setProtocol(request.getProtocol());
         response.setResponseCode(200);
         response.setReasonPhrase("OK");
         byte[] file = readFile("static/note_details.html");
         String htmlFileContents = new String(file);
-        htmlFileContents = htmlFileContents
-                .replace("${CONTENT_BLOCK}", TemplateUtils.getNoteDetailsTemplate(note))
-                .replace("${TITLE}", safe(note.getTitle()))
-                .replace("${ID}", safe(note.getId()))
-                .replace("${CREATED_AT}", note.getCreatedAt() != null ? note.getCreatedAt().format(FORMATTER) : "")
-                .replace("${MODIFIED_AT}", note.getModifiedAt() != null ? note.getModifiedAt().format(FORMATTER) : "")
-                .replace("${TEXT_CONTENT}", safe(note.getTextContent()))
-                .replace("${ORIGINAL_FILE_NAME}", safe(note.getOriginalFileName()))
-                .replace("${CONTENT_TYPE}", safe(note.getContentType()))
-                .replace("${SIZE_BYTES}", String.valueOf(note.getSizeBytes()))
-                .replace("${TYPE}", safe(note.getType()));
+
+        if(note != null) {
+            htmlFileContents = htmlFileContents
+                    .replace("${CONTENT_BLOCK}", TemplateUtils.getNoteDetailsTemplate(note))
+                    .replace("${TITLE}", safe(note.getTitle()))
+                    .replace("${ID}", safe(note.getId()))
+                    .replace("${CREATED_AT}", note.getCreatedAt() != null ? note.getCreatedAt().format(FORMATTER) : "")
+                    .replace("${MODIFIED_AT}", note.getModifiedAt() != null ? note.getModifiedAt().format(FORMATTER) : "")
+                    .replace("${TEXT_CONTENT}", safe(note.getTextContent()))
+                    .replace("${ORIGINAL_FILE_NAME}", safe(note.getOriginalFileName()))
+                    .replace("${CONTENT_TYPE}", safe(note.getContentType()))
+                    .replace("${SIZE_BYTES}", String.valueOf(note.getSizeBytes()))
+                    .replace("${TYPE}", safe(note.getType()));
+        }
 
         Header contentLengthHeader = new Header("Content-Length", String.valueOf(htmlFileContents.getBytes(StandardCharsets.UTF_8).length));
         response.setHeaders(Stream.concat(Arrays.stream(headers), Stream.of(contentLengthHeader)).collect(Collectors.toSet()));

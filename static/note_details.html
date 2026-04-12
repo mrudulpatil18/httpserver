@@ -70,9 +70,13 @@
 
 <script>
     function deleteNote(id) {
-        if(confirm("PERMANENTLY DELETE THIS NOTE?")) {
-            fetch('/api/notes/' + id, { method: 'DELETE' })
-                .then(() => window.location.href = '/');
+        if (confirm("DELETE " + id + "?")) {
+            fetch('/api/note/' + id, { method: 'DELETE' })
+                .then(() => {
+                    // Redirect to the index page since this note is gone
+                    window.location.href = '/';
+                })
+                .catch(err => alert("Error deleting note"));
         }
     }
 </script>

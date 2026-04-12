@@ -29,9 +29,9 @@ public class Main {
                 ) {
                     HttpRequestParser httpRequestParser = new HttpRequestParser();
                     HttpRequest request = httpRequestParser.parseHttpRequest(in);
-//                    System.out.println("--------------------------");
-//                    System.out.println("REQUEST: ");
-//                    System.out.println(request.log());
+                    System.out.println("--------------------------");
+                    System.out.println("REQUEST: ");
+                    System.out.println(request.log());
                     HttpResponse response = router.route(request);
 //                    System.out.println("--------------------------");
 //                    System.out.println("RESPONSE: ");

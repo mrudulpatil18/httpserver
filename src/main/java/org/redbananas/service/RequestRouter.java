@@ -70,7 +70,7 @@ public class RequestRouter {
                 return StaticFileUtil.generateHomePage(request, filePath, headers, notes);
             }else if(filePath.startsWith("static/note/")){
                 Note note = dbService.getNote(filePath.replace("static/note/", "").replace(".html", ""));
-                return StaticFileUtil.generateNotePage(request, filePath, headers, note);
+                return StaticFileUtil.generateNotePage(request, headers, note);
             }
 
             return StaticFileUtil.generateResponse(request, filePath, headers);
@@ -80,12 +80,16 @@ public class RequestRouter {
             }else if(request.getUrl().equals("/upload")) {
                 return handleUploadNote(request);
             }
+        }else if(request.getMethod().equals("DELETE")) {
+            if (request.getUrl().startsWith("/api/note/")) {
+                return handleDeleteNote(request);
+            }
         }
         HttpResponse res = new HttpResponse();
         res.setProtocol("HTTP/1.1");
         res.setResponseCode(303);
         res.setReasonPhrase("See Other");
-        res.setHeaders(Set.of(new Header("Location", "/page1"), new Header("Content-Length", "0")));
+        res.setHeaders(Set.of(new Header("Location", "/"), new Header("Content-Length", "0")));
         res.setResponseBody("randomValue".getBytes());
         return res;
     }
@@ -132,6 +136,18 @@ public class RequestRouter {
             }
         }
         return null;
+    }
+
+    private HttpResponse handleDeleteNote(HttpRequest request) {
+        String noteId = request.getUrl().replace("/api/note/", "");
+        dbService.deleteNote(noteId);
+        HttpResponse res = new HttpResponse();
+        res.setProtocol("HTTP/1.1");
+        res.setResponseCode(204);
+        res.setReasonPhrase("No Content");
+        res.setHeaders(Set.of(new Header("Location", "/"), new Header("Content-Length", "0")));
+
+        return res;
     }
 
     private HttpResponse handleAddNote(HttpRequest request) {
@@ -289,8 +305,3 @@ public class RequestRouter {
         };
     }
 }
-
-
-// TODO: get and show notes on homepage
-// TODO: /get/item/:id
-// TODO: handle edge cases in body parsing ( meh meh )

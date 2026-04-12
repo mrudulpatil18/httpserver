@@ -128,7 +128,7 @@
 <script>
     function deleteNote(id) {
         if (confirm("DELETE " + id + "?")) {
-            fetch('/api/notes/' + id, { method: 'DELETE' }).then(() => location.reload());
+            fetch('/api/note/' + id, { method: 'DELETE' }).then(() => location.reload());
         }
     }
     function copyToClipboard(text) {

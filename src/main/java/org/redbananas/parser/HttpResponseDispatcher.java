@@ -20,7 +20,9 @@ public class HttpResponseDispatcher {
                 outputStream.write((header.getHeaderName() + COLON_DELIMITER + SPACE_DELIMITER + header.getHeaderValue() + CR + LF).getBytes());
             }
             outputStream.write((""+ CR + LF).getBytes());
-            outputStream.write(res.getResponseBody());
+            if(res.getResponseBody() != null){
+                outputStream.write(res.getResponseBody());
+            }
             outputStream.flush();
 
     }

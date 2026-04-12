@@ -122,6 +122,22 @@ public class DbService {
 
     }
 
+    public void deleteNote(String id) {
+        var sql = """
+                DELETE FROM notes WHERE id = ?;
+        """;
+
+        try{
+            var psmt = conn.prepareStatement(sql);
+            psmt.setString(1, id);
+
+            psmt.executeUpdate();
+
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
     private Note getNoteFromResultSet(ResultSet rs) throws SQLException {
         Note note = new Note();
         note.setId(rs.getString("id"));
