@@ -44,7 +44,10 @@ public class RequestRouter {
             return "static/css/tiny-brutalism.css";
         }
         // If file doesn't exist OR is a directory -> serve 404
-        if (!Files.exists(path) || Files.isDirectory(path)) {
+        if ((!Files.exists(path) || Files.isDirectory(path))) {
+            if(reqPath.startsWith("static/note/")){
+                return reqPath;
+            }
             return "static/404.html";
         }
 
@@ -65,8 +68,8 @@ public class RequestRouter {
             if(filePath.equals("static/index.html")){
                 List<Note> notes = dbService.getAllNotes();
                 return StaticFileUtil.generateHomePage(request, filePath, headers, notes);
-            }else if(filePath.startsWith("/static/note/")){
-                Note note = dbService.getNote(filePath.substring("/static/note/".length()));
+            }else if(filePath.startsWith("static/note/")){
+                Note note = dbService.getNote(filePath.replace("static/note/", "").replace(".html", ""));
                 return StaticFileUtil.generateNotePage(request, filePath, headers, note);
             }
 

@@ -1,4 +1,4 @@
-package org.redbananas.engine;
+package org.redbananas.util;
 
 import org.redbananas.model.Note;
 
@@ -6,10 +6,55 @@ import java.time.format.DateTimeFormatter;
 
 public class TemplateUtils {
 
-    private static final DateTimeFormatter FORMATTER =
+    public static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
+    public static String getNoteDetailsTemplate(Note note) {
+        if (note == null || note.getType() == null) {
+            return "INVALID NOTE TYPE";
+        }
+        switch (note.getType()) {
+            case NOTE -> {
+                return "<p style=\"font-size: 1.2rem; white-space: pre-wrap;\">${TEXT_CONTENT}</p>";
+            }
+            case LINK -> {
+                return """
+                        <div class="text-center" style="padding: 2rem;">
+                            <p>External Resource:</p>
+                            <a href="${TEXT_CONTENT}" target="_blank" class="button" style="font-size: 1.5rem;">➜ VISIT LINK</a>
+                            <p style="margin-top: 1rem; font-size: 0.8rem;">${TEXT_CONTENT}</p>
+                        </div>
+                """;
+            }
+            case SNIPPET -> {
+                return """
+                        <div class="code-container">
+                            <pre><code>${TEXT_CONTENT}</code></pre>
+                        </div>
+                """;
+            }
+            case FILE ->  {
+                return """
+                       <div class="alert alert-info" style="display: flex; align-items: center; justify-content: space-between;">
+                           <div>
+                               <strong>FILE:</strong> ${ORIGINAL_FILE_NAME}<br>
+                               <small>${SIZE_BYTES} bytes • ${CONTENT_TYPE}</small>
+                           </div>
+                           <a href="/download?id=${ID}" class="button" style="background: #00ff00;">⬇ DOWNLOAD</a>
+                       </div>
+                """;
+            }
+            default -> {
+                return  "INVALID NOTE TYPE";
+            }
+
+        }
+    }
+
     public static String getNoteHtml(Note note) {
+        if (note == null) {
+            return "INVALID NOTE";
+        }
         return applyCommon(getNoteTemplate(), note);
     }
 
