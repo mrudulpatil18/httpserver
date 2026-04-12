@@ -3,36 +3,56 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add Note</title>
+    <title>NEW_NOTE // RAW_NOTES</title>
     <link rel="stylesheet" href="tiny-brutalism.css" />
+    <style>
+        .form-box {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: #fff;
+        }
+        h1 {
+            font-size: 3.5rem;
+            letter-spacing: -3px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        .button[type="submit"] {
+            width: 100%;
+            background: #ffff00;
+            margin-top: 1rem;
+            font-weight: 900;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
 
-    <h1 class="text-center">Add Note</h1>
+    <h1 class="text-center mt-2">NEW_NOTE</h1>
 
     <div class="text-center mb-2">
-        <a href="/" class="button mr-1">Home</a>
-        <a href="/upload" class="button">Upload File</a>
+        <a href="/" class="button mr-1">HOME</a>
+        <a href="/upload" class="button">UPLOAD_FILE</a>
     </div>
 
-    <form action="/note" method="POST">
+    <div class="box form-box">
+        <form action="/note" method="POST">
+            <label>TITLE</label>
+            <input type="text" name="title" placeholder="GIVE IT A NAME..." required>
 
-        <label>Title</label>
-        <input type="text" name="title" required>
+            <label>TYPE</label>
+            <select name="type">
+                <option value="NOTE">TEXT_NOTE</option>
+                <option value="LINK">WEB_LINK</option>
+                <option value="SNIPPET">CODE_SNIPPET</option>
+            </select>
 
-        <label>Type</label>
-        <select name="type">
-            <option value="NOTE">Text</option>
-            <option value="LINK">Link</option>
-            <option value="SNIPPET">Snippet</option>
-        </select>
+            <label>CONTENT</label>
+            <textarea name="content" rows="10" placeholder="RAW CONTENT GOES HERE..." required></textarea>
 
-        <label>Content</label>
-        <textarea name="content" rows="8" required></textarea>
-
-        <button type="submit">Save Note</button>
-    </form>
+            <button type="submit" class="button">SAVE_NOTE</button>
+        </form>
+    </div>
 
 </div>
 </body>
