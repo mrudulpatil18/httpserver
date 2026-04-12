@@ -38,7 +38,7 @@ public class DbService {
 
     }
 
-    public byte[] readFile(String filePath) {
+    public byte[] readFile(String filePath) throws RuntimeException {
         Path path = Paths.get(filePath);
         try {
             return Files.readAllBytes(path);

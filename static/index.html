@@ -3,52 +3,176 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Notes – Home</title>
-    <link rel="stylesheet" href="simple.min.css" />
+    <title>RAW_NOTES</title>
+    <link rel="stylesheet" href="tiny-brutalism.css" />
+
+    <style>
+        .box {
+            padding: 0;
+            display: flex;
+            position: relative;
+            margin-top: 1.5rem;
+            transition: transform 0.1s ease;
+        }
+
+        .box:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 #000;
+        }
+
+        .timestamp {
+            position: absolute;
+            top: -1.2rem;
+            left: -2px;
+            background: #000;
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .note-body {
+            padding: 1rem;
+            flex-grow: 1;
+            min-width: 0;
+            cursor: pointer;
+        }
+
+        .note-content {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-height: 1.4;
+            word-break: break-all;
+        }
+
+        .actions-group {
+            display: flex;
+            border-left: 2px solid #000;
+            background: #f0f0f0;
+        }
+
+        .action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            border-right: 2px solid #000;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            color: #000;
+        }
+
+        .action:last-child { border-right: none; }
+
+        .action:hover {
+            background: #000;
+            color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            .box { flex-direction: column; }
+            .actions-group {
+                border-left: none;
+                border-top: 2px solid #000;
+                height: 45px;
+                width: 100%;
+            }
+            .action { width: 50%; }
+        }
+    </style>
 </head>
 <body>
 
-<header>
-    <h1>Notes</h1>
-    <nav>
-        <a href="/note">Add Note</a>
-        <a href="/upload">Upload File</a>
-    </nav>
-</header>
+<div class="container">
+    <h1 class="text-center mt-2">RAW_NOTES</h1>
 
-<main>
-    <h2>Recently Added</h2>
+    <div class="text-center mb-2">
+        <a href="/note" class="button mr-1">+ NEW</a>
+        <a href="/upload" class="button">↑ UPLOAD</a>
+    </div>
 
-    <!-- Example items. Replace with server-rendered list -->
-    <article>
-        <h3>Understanding Redis Streams</h3>
-        <p>Type: Snippet</p>
-        <pre><code>XADD mystream * key value</code></pre>
-    </article>
+    <!-- TEXT NOTE -->
+    <div class="box" data-type="text">
+        <div class="timestamp">2026-04-12 // 11:24</div>
+        <div class="note-body" onclick="primaryAction(this)">
+            <div class="note-content">
+                <strong>Redis Stream Example</strong><br/>
+                XADD mystream * key value XADD mystream * key value
+            </div>
+        </div>
+        <div class="actions-group">
+            <a href="/note/1" class="action">⤢</a>
+            <div class="action" onclick="deleteNote(1)">✕</div>
+        </div>
+    </div>
 
-    <article>
-        <h3>Cool Article on OS Design</h3>
-        <p>Type: URL</p>
-        <p><a href="#">https://example.com/os-design</a></p>
-    </article>
+    <!-- LINK NOTE -->
+    <div class="box" data-type="link" data-url="https://example.com/os-design">
+        <div class="timestamp">2026-04-11 // 09:15</div>
+        <div class="note-body" onclick="primaryAction(this)">
+            <div class="note-content">
+                <strong>OS Design Article</strong><br/>
+                https://example.com/os-design
+            </div>
+        </div>
+        <div class="actions-group">
+            <a href="/note/3" class="action">⤢</a>
+            <div class="action" onclick="deleteNote(3)">✕</div>
+        </div>
+    </div>
 
-    <article>
-        <h3>Project Notes</h3>
-        <p>Type: Text</p>
-        <p>Remember to handle edge cases in the parser.</p>
-    </article>
+    <!-- FILE NOTE -->
+    <div class="box" data-type="file" data-url="/download?id=4">
+        <div class="timestamp">2026-04-10 // 22:01</div>
+        <div class="note-body" onclick="primaryAction(this)">
+            <div class="note-content">
+                <strong>system_specs.pdf</strong><br/>
+                Hardware requirements for the 2026 build.
+            </div>
+        </div>
+        <div class="actions-group">
+            <a href="/note/4" class="action">⤢</a>
+            <div class="action" onclick="deleteNote(4)">✕</div>
+        </div>
+    </div>
+</div>
 
-    <article>
-        <h3>design.pdf</h3>
-        <p>Type: File</p>
-        <p><a href="/download?id=267c18b9-8736-4e65-a865-bb2f16086982">Download</a></p>
-    </article>
+<script>
+    function primaryAction(el) {
+        const box = el.closest('.box');
+        const type = box.dataset.type;
 
-</main>
+        if (type === "text") {
+            const text = box.querySelector('.note-content').innerText;
+            navigator.clipboard.writeText(text.trim());
+            flash(el);
+        }
 
-<footer>
-    <p>Minimal notes app</p>
-</footer>
+        if (type === "link" || type === "file") {
+            const url = box.dataset.url;
+            window.open(url, "_blank");
+        }
+    }
+
+    function flash(el) {
+        el.style.background = "#000";
+        el.style.color = "#fff";
+        setTimeout(() => {
+            el.style.background = "";
+            el.style.color = "";
+        }, 150);
+    }
+
+    function deleteNote(id) {
+        if (confirm("DELETE NOTE " + id + "?")) {
+            console.log("Deleted", id);
+        }
+    }
+</script>
 
 </body>
 </html>

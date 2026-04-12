@@ -33,7 +33,7 @@ public class Main {
 //                    System.out.println("REQUEST: ");
 //                    System.out.println(request.log());
                     HttpResponse response = router.route(request);
-                    System.out.println("--------------------------");
+//                    System.out.println("--------------------------");
 //                    System.out.println("RESPONSE: ");
 //                    System.out.println(response.log());
                     HttpResponseDispatcher httpResponseDispatcher = new HttpResponseDispatcher();

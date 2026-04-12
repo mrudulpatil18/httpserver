@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -21,6 +23,7 @@ public class RequestRouter {
 
     private String fixPath(HttpRequest request) {
         String reqPath = request.getUrl();
+
         if (reqPath.equals("/")) {
             reqPath = reqPath + "index";
         } else if (reqPath.endsWith(".css")) {
@@ -28,11 +31,24 @@ public class RequestRouter {
         } else if (reqPath.endsWith(".js")) {
             reqPath = "/js" + reqPath;
         }
+
         reqPath = "static" + reqPath;
 
         if (!reqPath.contains(".")) {
             reqPath = reqPath + ".html";
         }
+
+        Path path = Path.of(reqPath);
+
+        if(!Files.exists(path) && path.endsWith("tiny-brutalism.css")){
+            return "static/css/tiny-brutalism.css";
+        }
+        // If file doesn't exist OR is a directory -> serve 404
+        if (!Files.exists(path) || Files.isDirectory(path)) {
+            return "static/404.html";
+        }
+
+
         return reqPath;
     }
 
@@ -66,8 +82,12 @@ public class RequestRouter {
 
         String noteId = getQueryParam(request.getUrl(), "id");
         Note note = dbService.getNote(noteId);
-
-        byte[] fileContent = dbService.readFile(note.getFilePath());
+        byte[] fileContent;
+        try {
+            fileContent = dbService.readFile(note.getFilePath());
+        }catch (Exception e){
+            return redirect404(noteId);
+        }
 
         HttpResponse res = new HttpResponse();
         res.setProtocol("HTTP/1.1");
@@ -157,6 +177,18 @@ public class RequestRouter {
         res.setReasonPhrase("See Other");
         res.setHeaders(Set.of(new Header("Location", "/"), new Header("Content-Length", "0")));
         res.setResponseBody(note.getBytes());
+        return res;
+
+    }
+
+    private HttpResponse redirect404(String noteId) {
+        HttpResponse res = new HttpResponse();
+
+        res.setProtocol("HTTP/1.1");
+        res.setResponseCode(303);
+        res.setReasonPhrase("See Other");
+        res.setHeaders(Set.of(new Header("Location", "/404"), new Header("Content-Length", "0")));
+        res.setResponseBody(noteId != null ? noteId.getBytes(): "random".getBytes());
         return res;
 
     }
