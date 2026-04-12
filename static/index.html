@@ -95,50 +95,8 @@
         <a href="/upload" class="button">↑ UPLOAD</a>
     </div>
 
-    <!-- TEXT NOTE -->
-    <div class="box" data-type="text">
-        <div class="timestamp">2026-04-12 // 11:24</div>
-        <div class="note-body" onclick="primaryAction(this)">
-            <div class="note-content">
-                <strong>Redis Stream Example</strong><br/>
-                XADD mystream * key value XADD mystream * key value
-            </div>
-        </div>
-        <div class="actions-group">
-            <a href="/note/1" class="action">⤢</a>
-            <div class="action" onclick="deleteNote(1)">✕</div>
-        </div>
-    </div>
-
-    <!-- LINK NOTE -->
-    <div class="box" data-type="link" data-url="https://example.com/os-design">
-        <div class="timestamp">2026-04-11 // 09:15</div>
-        <div class="note-body" onclick="primaryAction(this)">
-            <div class="note-content">
-                <strong>OS Design Article</strong><br/>
-                https://example.com/os-design
-            </div>
-        </div>
-        <div class="actions-group">
-            <a href="/note/3" class="action">⤢</a>
-            <div class="action" onclick="deleteNote(3)">✕</div>
-        </div>
-    </div>
-
-    <!-- FILE NOTE -->
-    <div class="box" data-type="file" data-url="/download?id=4">
-        <div class="timestamp">2026-04-10 // 22:01</div>
-        <div class="note-body" onclick="primaryAction(this)">
-            <div class="note-content">
-                <strong>system_specs.pdf</strong><br/>
-                Hardware requirements for the 2026 build.
-            </div>
-        </div>
-        <div class="actions-group">
-            <a href="/note/4" class="action">⤢</a>
-            <div class="action" onclick="deleteNote(4)">✕</div>
-        </div>
-    </div>
+    <!-- NOTES -->
+    ${NOTES_PLACEHOLDER}
 </div>
 
 <script>

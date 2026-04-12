@@ -61,6 +61,15 @@ public class RequestRouter {
             }
             String filePath = fixPath(request);
             Header[] headers = new Header[]{getContentTypeHeader(filePath)};
+
+            if(filePath.equals("static/index.html")){
+                List<Note> notes = dbService.getAllNotes();
+                return StaticFileUtil.generateHomePage(request, filePath, headers, notes);
+            }else if(filePath.startsWith("/static/note/")){
+                Note note = dbService.getNote(filePath.substring("/static/note/".length()));
+                return StaticFileUtil.generateNotePage(request, filePath, headers, note);
+            }
+
             return StaticFileUtil.generateResponse(request, filePath, headers);
         } else if (request.getMethod().equals("POST")) {
             if(request.getUrl().equals("/note")) {

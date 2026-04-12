@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 public class DbService {
@@ -69,7 +69,7 @@ public class DbService {
 
             psmt.setString(8, note.getCreatedAt().toString());
             psmt.setString(9, note.getModifiedAt().toString());
-            psmt.setString(10, String.valueOf(note.getSizeBytes()));
+            psmt.setInt(10, note.getSizeBytes());
 
             psmt.executeUpdate();
             return note.getId();
@@ -92,26 +92,64 @@ public class DbService {
             if (!rs.next()) {
                 return null;
             }
-            Note note = new Note();
-            note.setId(rs.getString("id"));
-            note.setType(NoteType.valueOf(rs.getString("type")));
-            note.setTitle(rs.getString("title"));
-            note.setTextContent(rs.getString("text_content"));
-            note.setContentType(rs.getString("content_type"));
-            note.setFilePath(rs.getString("file_path"));
-            note.setOriginalFileName(rs.getString("original_file_name"));
-            note.setSizeBytes(rs.getInt("size_bytes"));
+            return getNoteFromResultSet(rs);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
-            note.setCreatedAt(LocalDateTime.parse(rs.getString("created_at")));
-            note.setModifiedAt(LocalDateTime.parse(rs.getString("modified_at")));
+    }
 
-            return note;
+    public List<Note> getAllNotes() {
+        var sql = """
+                SELECT * FROM notes ORDER BY modified_at DESC;
+        """;
 
+        try{
+            var psmt = conn.prepareStatement(sql);
+            var rs = psmt.executeQuery();
+
+            List<Note> notes = new ArrayList<>();
+
+            while(rs.next()){
+                notes.add(getNoteFromResultSet(rs));
+               }
+
+            return notes;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private Note getNoteFromResultSet(ResultSet rs) throws SQLException {
+        Note note = new Note();
+        note.setId(rs.getString("id"));
+
+        // Safety check for Enum parsing
+        String typeStr = rs.getString("type");
+        if (typeStr != null) {
+            note.setType(NoteType.valueOf(typeStr));
+        }
+
+        note.setTitle(rs.getString("title"));
+        note.setTextContent(rs.getString("text_content"));
+        note.setContentType(rs.getString("content_type"));
+        note.setFilePath(rs.getString("file_path"));
+        note.setOriginalFileName(rs.getString("original_file_name"));
+
+        String createdAtStr = rs.getString("created_at");
+        if (createdAtStr != null) {
+            note.setCreatedAt(LocalDateTime.parse(createdAtStr));
+        }
+
+        String modifiedAtStr = rs.getString("modified_at");
+        if (modifiedAtStr != null) {
+            note.setModifiedAt(LocalDateTime.parse(modifiedAtStr));
+        }
+
+        note.setSizeBytes(rs.getInt("size_bytes"));
+        return note;
     }
 
     private Connection setupSqliteDB(String url) {
