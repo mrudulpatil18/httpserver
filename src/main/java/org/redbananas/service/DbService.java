@@ -127,13 +127,20 @@ public class DbService {
                 DELETE FROM notes WHERE id = ?;
         """;
 
+        Note note = getNote(id);
+
         try{
             var psmt = conn.prepareStatement(sql);
             psmt.setString(1, id);
 
+            if(note.getType() == NoteType.FILE){
+                Path path = Paths.get(note.getFilePath());
+                Files.deleteIfExists(path);
+            }
+
             psmt.executeUpdate();
 
-        }catch (SQLException e){
+        }catch (SQLException | IOException e){
             throw new RuntimeException(e);
         }
     }
