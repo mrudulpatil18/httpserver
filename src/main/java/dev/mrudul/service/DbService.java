@@ -1,8 +1,8 @@
-package org.redbananas.service;
+package dev.mrudul.service;
 
 import lombok.AllArgsConstructor;
-import org.redbananas.model.Note;
-import org.redbananas.model.NoteType;
+import dev.mrudul.model.Note;
+import dev.mrudul.model.NoteType;
 
 import java.io.IOException;
 import java.nio.file.Files;

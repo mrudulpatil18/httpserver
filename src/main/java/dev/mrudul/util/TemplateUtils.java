@@ -1,6 +1,6 @@
-package org.redbananas.util;
+package dev.mrudul.util;
 
-import org.redbananas.model.Note;
+import dev.mrudul.model.Note;
 import java.time.format.DateTimeFormatter;
 
 public class TemplateUtils {

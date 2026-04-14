@@ -1,9 +1,9 @@
-package org.redbananas.parser;
+package dev.mrudul.parser;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.redbananas.model.Header;
-import org.redbananas.model.HttpRequest;
+import dev.mrudul.model.Header;
+import dev.mrudul.model.HttpRequest;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

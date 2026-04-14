@@ -1,9 +1,9 @@
-package org.redbananas.util;
+package dev.mrudul.util;
 
-import org.redbananas.model.Header;
-import org.redbananas.model.HttpRequest;
-import org.redbananas.model.HttpResponse;
-import org.redbananas.model.Note;
+import dev.mrudul.model.Header;
+import dev.mrudul.model.HttpRequest;
+import dev.mrudul.model.HttpResponse;
+import dev.mrudul.model.Note;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.redbananas.util.TemplateUtils.FORMATTER;
+import static dev.mrudul.util.TemplateUtils.FORMATTER;
 
 public class StaticFileUtil {
 

@@ -1,10 +1,10 @@
-package org.redbananas;
+package dev.mrudul;
 
-import org.redbananas.model.HttpRequest;
-import org.redbananas.model.HttpResponse;
-import org.redbananas.parser.HttpRequestParser;
-import org.redbananas.parser.HttpResponseDispatcher;
-import org.redbananas.service.RequestRouter;
+import dev.mrudul.model.HttpRequest;
+import dev.mrudul.model.HttpResponse;
+import dev.mrudul.parser.HttpRequestParser;
+import dev.mrudul.parser.HttpResponseDispatcher;
+import dev.mrudul.service.RequestRouter;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -22,8 +22,8 @@ public class Main {
             System.out.println("Listening for clients.....");
             while (true) {
                 Socket socket = sc.accept();
-//                System.out.println("Connection Established: ");
-//                printSocketDetails(socket);
+                System.out.println("Connection Established: ");
+                printSocketDetails(socket);
                 try (OutputStream out = socket.getOutputStream();
                      InputStream in = socket.getInputStream()
                 ) {
@@ -33,9 +33,9 @@ public class Main {
                     System.out.println("REQUEST: ");
                     System.out.println(request.log());
                     HttpResponse response = router.route(request);
-//                    System.out.println("--------------------------");
-//                    System.out.println("RESPONSE: ");
-//                    System.out.println(response.log());
+                    System.out.println("--------------------------");
+                    System.out.println("RESPONSE: ");
+                    System.out.println(response.log());
                     HttpResponseDispatcher httpResponseDispatcher = new HttpResponseDispatcher();
                     httpResponseDispatcher.sendResponse(out, response);
                 } catch (IOException e) {

@@ -1,8 +1,8 @@
-package org.redbananas.parser;
+package dev.mrudul.parser;
 
 import lombok.NoArgsConstructor;
-import org.redbananas.model.Header;
-import org.redbananas.model.HttpResponse;
+import dev.mrudul.model.Header;
+import dev.mrudul.model.HttpResponse;
 
 import java.io.IOException;
 import java.io.OutputStream;

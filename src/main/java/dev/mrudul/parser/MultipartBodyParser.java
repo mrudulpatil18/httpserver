@@ -1,8 +1,8 @@
-package org.redbananas.parser;
+package dev.mrudul.parser;
 
-import org.redbananas.model.FormDataBody;
-import org.redbananas.model.Header;
-import org.redbananas.model.HttpRequest;
+import dev.mrudul.model.FormDataBody;
+import dev.mrudul.model.Header;
+import dev.mrudul.model.HttpRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;

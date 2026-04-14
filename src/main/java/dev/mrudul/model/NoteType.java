@@ -1,4 +1,4 @@
-package org.redbananas.model;
+package dev.mrudul.model;
 
 public enum NoteType {
     NOTE,
