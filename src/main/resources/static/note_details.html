@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>${TITLE} - RAW_NOTES</title>
-    <link rel="stylesheet" href="tiny-brutalism.css" />
+    <link rel="stylesheet" href="tiny-brutalism.css"/>
     <style>
         .note-card {
             background: #fff;
@@ -15,6 +15,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .type-tag {
             display: inline-block;
             background: #000;
@@ -24,6 +25,7 @@
             margin-bottom: 1rem;
             transform: rotate(-1deg);
         }
+
         .content-well {
             margin: 2rem 0;
             padding: 1.5rem;
@@ -33,14 +35,23 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .meta-footer {
             font-size: 0.8rem;
             border-top: 2px solid #000;
             padding-top: 1rem;
             margin-top: 2rem;
         }
-        .btn-update { background: #ffff00 !important; } /* Yellow for Edit */
-        .btn-delete { background: #ff4d4d !important; color: #fff !important; }
+
+        .btn-update {
+            background: #ffff00 !important;
+        }
+
+        /* Yellow for Edit */
+        .btn-delete {
+            background: #ff4d4d !important;
+            color: #fff !important;
+        }
     </style>
 </head>
 <body>
@@ -59,7 +70,9 @@
 
         <div class="row">
             <div class="col-6">
-                <button class="button btn-update" style="width: 100%" onclick="location.href='/edit/${ID}'">✎ EDIT NOTE</button>
+                <button class="button btn-update" style="width: 100%" onclick="location.href='/edit/${ID}'">✎ EDIT
+                    NOTE
+                </button>
             </div>
             <div class="col-6">
                 <button class="button btn-delete" style="width: 100%" onclick="deleteNote('${ID}')">✘ DELETE</button>
@@ -67,7 +80,8 @@
         </div>
 
         <div class="meta-footer">
-            <strong>ID:</strong> ${ID} | <strong>CREATED:</strong> ${CREATED_AT} | <strong>MODIFIED:</strong> ${MODIFIED_AT}
+            <strong>ID:</strong> ${ID} | <strong>CREATED:</strong> ${CREATED_AT} | <strong>MODIFIED:</strong>
+            ${MODIFIED_AT}
         </div>
     </div>
 </div>
@@ -75,13 +89,21 @@
 <script>
     function deleteNote(id) {
         if (confirm("DELETE " + id + "?")) {
-            fetch('/api/note/' + id, { method: 'DELETE' })
+            fetch('/api/note/' + id, {method: 'DELETE'})
                 .then(() => {
                     // Redirect to the index page since this note is gone
                     window.location.href = '/';
                 })
                 .catch(err => alert("Error deleting note"));
         }
+    }
+
+    function copyFromDetails(btn) {
+        const text = btn.dataset.content;
+        navigator.clipboard.writeText(text).then(() => {
+            btn.textContent = "✓ COPIED";
+            setTimeout(() => btn.textContent = "⧉ COPY", 1200);
+        });
     }
 </script>
 </body>

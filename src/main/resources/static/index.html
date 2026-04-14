@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>RAW_NOTES</title>
-    <link rel="stylesheet" href="tiny-brutalism.css" />
+    <link rel="stylesheet" href="tiny-brutalism.css"/>
     <style>
         /* Override and extend framework for list view */
         .notes-grid {
@@ -41,14 +41,6 @@
             cursor: pointer;
         }
 
-        .item-icon {
-            flex: 0 0 45px;
-            font-size: 1.2rem;
-            opacity: 0.8;
-            display: flex;
-            justify-content: center;
-        }
-
         .item-title {
             flex: 0 0 220px;
             font-weight: 700;
@@ -78,6 +70,7 @@
             font-weight: bold;
         }
 
+
         .item-actions {
             display: flex;
             height: 100%;
@@ -85,28 +78,28 @@
         }
 
         .action-btn {
+            width: 56px;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 100%;
+
+            border-left: 2px solid #000;
+
+            font-size: 1.3rem;
+            font-weight: 900;
+
             cursor: pointer;
-            transition: background 0.1s;
-            border-left: 1px solid #eee; /* Light separator between actions */
+            user-select: none;
         }
 
         .action-btn:hover {
-            background: #ffff00; /* Signature yellow hover */
+            background: #ffff00;
         }
 
         .delete-trigger:hover {
             background: #ff0000;
             color: #fff;
-        }
-
-        @media (max-width: 850px) {
-            .item-preview { display: none; }
-            .item-title { flex: 1; }
         }
     </style>
 </head>
@@ -126,13 +119,41 @@
 </div>
 
 <script>
+    function flashCopied(el) {
+        const original = el.textContent;
+        el.textContent = "✓";
+        el.classList.add("copied");
+
+        setTimeout(() => {
+            el.textContent = original;
+            el.classList.remove("copied");
+        }, 900);
+    }
+
+    function handleAction(el) {
+        const type = el.dataset.type;
+        const content = el.dataset.content;
+        const id = el.dataset.id;
+
+        if (type === "NOTE" || type === "SNIPPET") {
+            navigator.clipboard.writeText(content).then(() => {
+                flashCopied(el);
+            });
+        }
+
+        if (type === "LINK") {
+            window.open(content, "_blank");
+        }
+
+        if (type === "FILE") {
+            window.location.href = "/download?id=" + id;
+        }
+    }
+
     function deleteNote(id) {
         if (confirm("DELETE " + id + "?")) {
             fetch('/api/note/' + id, { method: 'DELETE' }).then(() => location.reload());
         }
-    }
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => alert("COPIED"));
     }
 </script>
 </body>
