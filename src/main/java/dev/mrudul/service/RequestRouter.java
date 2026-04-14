@@ -2,13 +2,12 @@ package dev.mrudul.service;
 
 import dev.mrudul.model.*;
 import dev.mrudul.parser.MultipartBodyParser;
+import dev.mrudul.util.ResourceLoaderUtil;
 import dev.mrudul.util.StaticFileUtil;
 
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -37,21 +36,15 @@ public class RequestRouter {
             reqPath = reqPath + ".html";
         }
 
-        Path path = Path.of(reqPath);
-
-        if(!Files.exists(path) && path.endsWith("tiny-brutalism.css")){
-            return "static/css/tiny-brutalism.css";
-        }
-        // If file doesn't exist OR is a directory -> serve 404
-        if ((!Files.exists(path) || Files.isDirectory(path))) {
-            if(reqPath.startsWith("static/note/")){
+        try {
+            ResourceLoaderUtil.readBytes(reqPath);
+            return reqPath;
+        } catch (Exception e) {
+            if (reqPath.startsWith("static/note/")) {
                 return reqPath;
             }
             return "static/404.html";
         }
-
-
-        return reqPath;
     }
 
 
@@ -184,7 +177,7 @@ public class RequestRouter {
 
         note.setId(UUID.randomUUID().toString());
         note.setType(NoteType.FILE);
-        note.setFilePath("data/" + note.getId() + "." + extension );
+        note.setFilePath("/var/lib/raw-notes/files/" + note.getId() + "." + extension);
         note.setCreatedAt(LocalDateTime.now());
         note.setModifiedAt(note.getCreatedAt());
         note.setContentType(filetype);

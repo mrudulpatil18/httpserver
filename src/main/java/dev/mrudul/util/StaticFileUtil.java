@@ -7,7 +7,6 @@ import dev.mrudul.model.Note;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -19,13 +18,11 @@ import static dev.mrudul.util.TemplateUtils.FORMATTER;
 
 public class StaticFileUtil {
 
-    private static byte[] readFile(String serverPath) throws IOException {
-        try{
-        Path path = Paths.get(serverPath);
-        return Files.readAllBytes(path);
-        } catch(Exception e){
-            System.out.println("Error reading file " + serverPath + ": " + e.getMessage());
-            return Files.readAllBytes(Paths.get("static/404.html"));
+    private static byte[] readFile(String serverPath) {
+        try {
+            return ResourceLoaderUtil.readBytes(serverPath);
+        } catch (Exception e) {
+            return ResourceLoaderUtil.readBytes("static/404.html");
         }
     }
 

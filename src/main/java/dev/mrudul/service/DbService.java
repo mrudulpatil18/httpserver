@@ -17,10 +17,16 @@ import java.util.List;
 public class DbService {
 
     Connection conn;
-    String dbPath = Paths.get("data/my.db").toAbsolutePath().toString();
-    final String url = "jdbc:sqlite:" + dbPath;
+    private static final String DATA_DIR = "/var/lib/raw-notes";
+    private static final String DB_PATH = DATA_DIR + "/my.db";
+    final String url = "jdbc:sqlite:" + DB_PATH;
 
     public DbService() {
+        try {
+            Files.createDirectories(Paths.get("/var/lib/raw-notes/files"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         this.conn = setupSqliteDB(url);
     }
 
