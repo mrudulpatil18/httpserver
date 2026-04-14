@@ -36,6 +36,11 @@ public class RequestRouter {
             reqPath = reqPath + ".html";
         }
 
+        if(!reqPath.contains(".html")) {
+            reqPath = reqPath.replace("/note", "");
+        }
+
+
         try {
             ResourceLoaderUtil.readBytes(reqPath);
             return reqPath;

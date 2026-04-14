@@ -40,8 +40,6 @@ public class DbService {
         } catch (IOException e) {
             throw new RuntimeException("Failed to save fil: " + filePath, e);
         }
-
-
     }
 
     public byte[] readFile(String filePath) throws RuntimeException {
