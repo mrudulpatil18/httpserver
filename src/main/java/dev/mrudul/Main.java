@@ -30,13 +30,13 @@ public class Main {
                 ) {
                     HttpRequestParser httpRequestParser = new HttpRequestParser();
                     HttpRequest request = httpRequestParser.parseHttpRequest(in);
-                    System.out.println("--------------------------");
-                    System.out.println("REQUEST: ");
-                    System.out.println(request.log());
+//                    System.out.println("--------------------------");
+//                    System.out.println("REQUEST: ");
+//                    System.out.println(request.log());
                     HttpResponse response = router.route(request);
-                    System.out.println("--------------------------");
-                    System.out.println("RESPONSE: ");
-                    System.out.println(response.log());
+//                    System.out.println("--------------------------");
+//                    System.out.println("RESPONSE: ");
+//                    System.out.println(response.log());
                     HttpResponseDispatcher httpResponseDispatcher = new HttpResponseDispatcher();
                     httpResponseDispatcher.sendResponse(out, response);
                 } catch (IOException e) {
