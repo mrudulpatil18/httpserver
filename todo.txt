@@ -1,0 +1,26 @@
+TODO 1: better error handling and fallback
+    a. parser failures, invalid client input: 400
+    b. unknown route: 404
+    c. unsupported method: 405
+    d. server side failures: 500
+
+TODO 2: Split resonsibility
+    parser: only parse raw bytes into HttpRequest or fail with exception
+    router: only decide which handler to process requets or fail with exception
+    handler/services: do business logic and throw exception
+    top level pipeline: catch all exceptions and convert to HTTPResponse ( edge of system )
+    - BadRequestException → malformed input, missing query param, invalid form body.
+    - NotFoundException → note/le/route not found.
+    - MethodNotAllowedException → route exists but method is wrong.
+    - ServerFailureException or just fallback Runtim eException → unexpected internal error.
+    single  place to turn exceptions into response
+
+TODO 3: threadpool to handle multiple requests at a time
+
+TODO 4: edit note
+
+TODO 5: fuzzy search
+
+
+
+
