@@ -14,6 +14,7 @@ import java.util.*;
 public class RequestRouter {
 
     DbService dbService;
+    public static String BASE_PATH = "";
 
     public RequestRouter() {
         this.dbService = new DbService();
@@ -86,7 +87,7 @@ public class RequestRouter {
         res.setProtocol("HTTP/1.1");
         res.setResponseCode(303);
         res.setReasonPhrase("See Other");
-        res.setHeaders(Set.of(new Header("Location", "/"), new Header("Content-Length", "0")));
+        res.setHeaders(Set.of(new Header("Location", BASE_PATH), new Header("Content-Length", "0")));
         res.setResponseBody("randomValue".getBytes());
         return res;
     }
@@ -200,7 +201,7 @@ public class RequestRouter {
         res.setProtocol("HTTP/1.1");
         res.setResponseCode(303);
         res.setReasonPhrase("See Other");
-        res.setHeaders(Set.of(new Header("Location", "/"), new Header("Content-Length", "0")));
+        res.setHeaders(Set.of(new Header("Location", BASE_PATH), new Header("Content-Length", "0")));
         res.setResponseBody(note.getBytes());
         return res;
 
@@ -212,7 +213,7 @@ public class RequestRouter {
         res.setProtocol("HTTP/1.1");
         res.setResponseCode(303);
         res.setReasonPhrase("See Other");
-        res.setHeaders(Set.of(new Header("Location", "/404"), new Header("Content-Length", "0")));
+        res.setHeaders(Set.of(new Header("Location", BASE_PATH+ "/404"), new Header("Content-Length", "0")));
         res.setResponseBody(noteId != null ? noteId.getBytes(): "random".getBytes());
         return res;
 

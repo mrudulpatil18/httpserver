@@ -5,6 +5,8 @@ import lombok.Data;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
+import static dev.mrudul.service.RequestRouter.BASE_PATH;
+
 @Data
 public class HttpRequest {
     String method;
@@ -44,6 +46,10 @@ public class HttpRequest {
         }
 
         return sb.toString();
+    }
+
+    public String getUrl(){
+        return url.replace(BASE_PATH, "");
     }
 }
 

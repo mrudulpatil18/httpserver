@@ -14,6 +14,7 @@ public class Main {
     private static final RequestRouter router = new RequestRouter();
 
     public static void main(String[] args) {
+        RequestRouter.BASE_PATH = "/raw";
         setupHttpServer(12345);
     }
 
