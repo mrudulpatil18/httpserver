@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>${TITLE} - RAW_NOTES</title>
     <link rel="stylesheet" href="tiny-brutalism.css"/>
+    <base href="/raw/">
     <style>
         .note-card {
             background: #fff;
@@ -57,7 +58,7 @@
 <body>
 <div class="container">
     <div class="text-center mt-2">
-        <a href="" class="button">← BACK TO LIST</a>
+        <a href="." class="button">← BACK TO LIST</a>
     </div>
 
     <div class="note-card">
@@ -92,7 +93,7 @@
             fetch('api/note/' + id, {method: 'DELETE'})
                 .then(() => {
                     // Redirect to the index page since this note is gone
-                    window.location.href = '';
+                    window.location.href = '.';
                 })
                 .catch(err => alert("Error deleting note"));
         }

@@ -22,6 +22,7 @@ public class RequestRouter {
 
     private String fixPath(HttpRequest request) {
         String reqPath = request.getUrl();
+        System.out.println("TRYING TO READ: " + reqPath);
 
         if (reqPath.equals("/")) {
             reqPath = reqPath + "index";
@@ -87,7 +88,7 @@ public class RequestRouter {
         res.setProtocol("HTTP/1.1");
         res.setResponseCode(303);
         res.setReasonPhrase("See Other");
-        res.setHeaders(Set.of(new Header("Location", BASE_PATH), new Header("Content-Length", "0")));
+        res.setHeaders(Set.of(new Header("Location", BASE_PATH + "/"), new Header("Content-Length", "0")));
         res.setResponseBody("randomValue".getBytes());
         return res;
     }
@@ -143,7 +144,7 @@ public class RequestRouter {
         res.setProtocol("HTTP/1.1");
         res.setResponseCode(204);
         res.setReasonPhrase("No Content");
-        res.setHeaders(Set.of(new Header("Location", "/"), new Header("Content-Length", "0")));
+        res.setHeaders(Set.of(new Header("Location", BASE_PATH + "/"), new Header("Content-Length", "0")));
 
         return res;
     }
@@ -201,7 +202,7 @@ public class RequestRouter {
         res.setProtocol("HTTP/1.1");
         res.setResponseCode(303);
         res.setReasonPhrase("See Other");
-        res.setHeaders(Set.of(new Header("Location", BASE_PATH), new Header("Content-Length", "0")));
+        res.setHeaders(Set.of(new Header("Location", BASE_PATH + "/"), new Header("Content-Length", "0")));
         res.setResponseBody(note.getBytes());
         return res;
 
@@ -213,7 +214,7 @@ public class RequestRouter {
         res.setProtocol("HTTP/1.1");
         res.setResponseCode(303);
         res.setReasonPhrase("See Other");
-        res.setHeaders(Set.of(new Header("Location", BASE_PATH+ "/404"), new Header("Content-Length", "0")));
+        res.setHeaders(Set.of(new Header("Location", BASE_PATH + "/404"), new Header("Content-Length", "0")));
         res.setResponseBody(noteId != null ? noteId.getBytes(): "random".getBytes());
         return res;
 

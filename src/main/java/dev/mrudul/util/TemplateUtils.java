@@ -57,7 +57,7 @@ public class TemplateUtils {
     private static String getUnifiedTemplate() {
         return """
                 <div class="list-item">
-                    <div class="item-body" onclick="location.href='/note/${id}'">
+                    <div class="item-body" onclick="location.href='note/${id}'">
                         <span class="item-title">${title}</span>
                         <span class="item-preview">${preview}</span>
                         <span class="item-meta">${time_modified}</span>
@@ -143,7 +143,7 @@ public class TemplateUtils {
             case FILE -> """
                     <div class="alert alert-info">
                         <strong>FILE:</strong> ${ORIGINAL_FILE_NAME}<br>
-                        <a href="/download?id=${ID}" class="button mt-1">⬇ DOWNLOAD</a>
+                        <a href="download?id=${ID}" class="button mt-1">⬇ DOWNLOAD</a>
                     </div>
                     """;
 

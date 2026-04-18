@@ -49,7 +49,14 @@ public class HttpRequest {
     }
 
     public String getUrl(){
-        return url.replace(BASE_PATH, "");
+        String[] parts = url.split("\\?", 2);
+        String path = parts[0];
+        String query = parts.length > 1 ? "?" + parts[1] : "";
+        if (path.startsWith(BASE_PATH)) {
+            path = path.substring(BASE_PATH.length());
+            if (path.isEmpty()) path = "/";
+        }
+        return path + query;
     }
 }
 
