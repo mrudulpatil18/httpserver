@@ -9,10 +9,18 @@ import dev.mrudul.service.RequestRouter;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.*;
 
 public class Main {
     private static final RequestRouter router = new RequestRouter();
-
+    private static final ExecutorService EXECUTOR =
+            new ThreadPoolExecutor(
+                    10,                 // core
+                    50,                 // max
+                    60, TimeUnit.SECONDS,
+                    new ArrayBlockingQueue<>(100),
+                    new ThreadPoolExecutor.AbortPolicy()
+            );
     public static void main(String[] args) {
         RequestRouter.BASE_PATH = "/raw";
         setupHttpServer(12345);
@@ -23,26 +31,31 @@ public class Main {
             System.out.println("Listening for clients.....");
             while (true) {
                 Socket socket = sc.accept();
-                System.out.println("Connection Established: ");
-                printSocketDetails(socket);
-                try (OutputStream out = socket.getOutputStream();
-                     InputStream in = socket.getInputStream()
-                ) {
-                    HttpRequestParser httpRequestParser = new HttpRequestParser();
-                    HttpRequest request = httpRequestParser.parseHttpRequest(in);
+                EXECUTOR.submit(() -> handleClient(socket));
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    private static void handleClient(Socket socket){
+        System.out.println("Connection Established: ");
+        printSocketDetails(socket);
+        try (OutputStream out = socket.getOutputStream();
+             InputStream in = socket.getInputStream()
+        ) {
+            HttpRequestParser httpRequestParser = new HttpRequestParser();
+            HttpRequest request = httpRequestParser.parseHttpRequest(in);
 //                    System.out.println("--------------------------");
 //                    System.out.println("REQUEST: ");
 //                    System.out.println(request.log());
-                    HttpResponse response = router.route(request);
+            HttpResponse response = router.route(request);
 //                    System.out.println("--------------------------");
 //                    System.out.println("RESPONSE: ");
 //                    System.out.println(response.log());
-                    HttpResponseDispatcher httpResponseDispatcher = new HttpResponseDispatcher();
-                    httpResponseDispatcher.sendResponse(out, response);
-                } catch (IOException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
+            HttpResponseDispatcher httpResponseDispatcher = new HttpResponseDispatcher();
+            httpResponseDispatcher.sendResponse(out, response);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

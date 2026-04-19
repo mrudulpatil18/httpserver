@@ -15,7 +15,6 @@ TODO 2: Split resonsibility
     - ServerFailureException or just fallback Runtim eException → unexpected internal error.
     single  place to turn exceptions into response
 
-TODO 3: threadpool to handle multiple requests at a time
 
 TODO 4: edit note
 
