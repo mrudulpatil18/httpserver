@@ -1,6 +1,7 @@
 package dev.mrudul.util;
 
 import dev.mrudul.model.Note;
+import dev.mrudul.model.NoteType;
 
 import java.time.format.DateTimeFormatter;
 
@@ -14,8 +15,8 @@ public class TemplateUtils {
 
         String previewText = (customPreview != null) ? customPreview :
                 (note.getTextContent() != null
-                        ? note.getTextContent().replace("\n", " ").replace("\r", "")
-                        : "");
+                 ? note.getTextContent().replace("\n", " ").replace("\r", "")
+                 : "");
 
         if (previewText.length() > 80) previewText = previewText.substring(0, 77) + "...";
 
@@ -87,6 +88,54 @@ public class TemplateUtils {
     private static String escapeJs(String s) {
         if (s == null) return "";
         return s.replace("'", "\\'").replace("\n", "\\n").replace("\r", "");
+    }
+
+    public static String getEditPageTemplate(Note note) {
+        if (note == null || note.getType() == null) return "INVALID NOTE TYPE";
+
+        if (note.getType().equals(NoteType.FILE)) {
+            return """
+                    <div style="display:flex; flex-direction:column; gap:1rem;">
+                    
+                        <div style="
+                            border:3px solid #000;
+                            padding:1rem;
+                            background:#fff;
+                            box-shadow:6px 6px 0 #000;
+                            font-weight:900;
+                            text-transform:uppercase;">
+                            CURRENT FILE
+                            <div style="margin-top:0.5rem; font-weight:700; text-transform:none;">
+                                ${ORIGINAL_FILE_NAME}
+                            </div>
+                        </div>
+                    
+                        <a href="../../download?id=${ID}" class="button"
+                           style="background:#00ff00; text-align:center;">
+                           ⬇ DOWNLOAD CURRENT FILE
+                        </a>
+                    
+                        <div style="
+                            border:3px dashed #000;
+                            padding:1rem;
+                            background:#fafafa;">
+                    
+                            <div style="font-weight:900; margin-bottom:0.5rem;">
+                                REPLACE FILE
+                            </div>
+                    
+                            <input type="file" name="file" required
+                                   style="width:100%; border:2px solid #000; padding:0.6rem; background:#fff;"/>
+
+                        </div>
+                    
+                    </div>
+                    """;
+        } else {
+            return """
+                    <textarea name="content" rows="12" required>${TEXT_CONTENT}</textarea> 
+                    """;
+        }
     }
 
     // Switch expression for details page

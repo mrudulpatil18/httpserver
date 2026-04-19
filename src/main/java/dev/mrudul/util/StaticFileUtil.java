@@ -98,6 +98,35 @@ public class StaticFileUtil {
         return response;
     }
 
+    public static HttpResponse generateEditPage(HttpRequest request, Header[] headers, Note note) throws  IOException{
+        HttpResponse response = new HttpResponse();
+        response.setProtocol(request.getProtocol());
+        response.setResponseCode(200);
+        response.setReasonPhrase("OK");
+        byte[] file = readFile("static/edit.html");
+        String htmlFileContents = new String(file);
+
+        if(note != null) {
+            htmlFileContents = htmlFileContents
+                    .replace("${CONTENT_BLOCK}", TemplateUtils.getEditPageTemplate(note))
+                    .replace("${TITLE}", safe(note.getTitle()))
+                    .replace("${ID}", safe(note.getId()))
+                    .replace("${CREATED_AT}", note.getCreatedAt() != null ? note.getCreatedAt().format(FORMATTER) : "")
+                    .replace("${MODIFIED_AT}", note.getModifiedAt() != null ? note.getModifiedAt().format(FORMATTER) : "")
+                    .replace("${TEXT_CONTENT}", safe(note.getTextContent()))
+                    .replace("${ORIGINAL_FILE_NAME}", safe(note.getOriginalFileName()))
+                    .replace("${CONTENT_TYPE}", safe(note.getContentType()))
+                    .replace("${SIZE_BYTES}", String.valueOf(note.getSizeBytes()))
+                    .replace("${TYPE}", safe(note.getType()));
+        }
+
+        Header contentLengthHeader = new Header("Content-Length", String.valueOf(htmlFileContents.getBytes(StandardCharsets.UTF_8).length));
+        response.setHeaders(Stream.concat(Arrays.stream(headers), Stream.of(contentLengthHeader)).collect(Collectors.toSet()));
+        response.setResponseBody(htmlFileContents.getBytes(StandardCharsets.UTF_8));
+
+        return response;
+    }
+
     private static String safe(Object value) {
         return value == null ? "" : String.valueOf(value);
     }

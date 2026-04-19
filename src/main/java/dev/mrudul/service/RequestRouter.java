@@ -40,6 +40,7 @@ public class RequestRouter {
 
         if(!reqPath.contains(".html")) {
             reqPath = reqPath.replace("/note", "");
+            reqPath = reqPath.replace("/edit", "");
         }
 
 
@@ -47,7 +48,7 @@ public class RequestRouter {
             ResourceLoaderUtil.readBytes(reqPath);
             return reqPath;
         } catch (Exception e) {
-            if (reqPath.startsWith("static/note/")) {
+            if (reqPath.startsWith("static/note/") || reqPath.startsWith("static/edit")) {
                 return reqPath;
             }
             return "static/404.html";
@@ -70,6 +71,9 @@ public class RequestRouter {
             }else if(filePath.startsWith("static/note/")){
                 Note note = dbService.getNote(filePath.replace("static/note/", "").replace(".html", ""));
                 return StaticFileUtil.generateNotePage(request, headers, note);
+            }else if(filePath.startsWith("static/edit")){
+                Note note = dbService.getNote(filePath.replace("static/edit/", "").replace(".html", ""));
+                return StaticFileUtil.generateEditPage(request, headers, note);
             }
 
             return StaticFileUtil.generateResponse(request, filePath, headers);
