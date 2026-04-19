@@ -10,6 +10,8 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RequestRouter {
 
@@ -82,6 +84,8 @@ public class RequestRouter {
                 return handleAddNote(request);
             }else if(request.getUrl().equals("/upload")) {
                 return handleUploadNote(request);
+            }else if(request.getUrl().startsWith("/edit")){
+                return handleEditNote(request);
             }
         }else if(request.getMethod().equals("DELETE")) {
             if (request.getUrl().startsWith("/api/note/")) {
@@ -95,6 +99,96 @@ public class RequestRouter {
         res.setHeaders(Set.of(new Header("Location", BASE_PATH + "/"), new Header("Content-Length", "0")));
         res.setResponseBody("randomValue".getBytes());
         return res;
+    }
+
+    private HttpResponse handleEditNote(HttpRequest request) {
+        try {
+            String url = request.getUrl();                // "/edit/abc-123"
+            String noteId = url.replaceFirst("^/edit/", "");
+            Note note = dbService.getNote(noteId);
+            if (note == null) {
+                return redirect404(noteId);
+            }
+
+            // Parse multipart form data (the edit form always uses multipart)
+            MultipartBodyParser multipart = new MultipartBodyParser(request);
+            var parts = multipart.parse();
+
+            String newTitle = null;
+            String newContent = null;
+            byte[] newFileBytes = null;
+            String newFileName = null;
+            String newContentType = null;
+
+            for (FormDataBody part : parts) {
+                String fieldName = getFieldName(part.getHeaders());
+                if ("title".equals(fieldName)) {
+                    newTitle = new String(part.getBody(), StandardCharsets.UTF_8);
+                } else if ("content".equals(fieldName)) {
+                    newContent = new String(part.getBody(), StandardCharsets.UTF_8);
+                } else if ("file".equals(fieldName)) {
+                    newFileName = getOriginalFileName(part.getHeaders());
+                    newFileBytes = part.getBody();
+                    newContentType = getContentType(part.getHeaders());
+                }
+            }
+
+            // Apply title change (always present)
+            if (newTitle != null && !newTitle.isBlank()) {
+                note.setTitle(newTitle);
+            }
+
+            // Handle based on note type
+            if (note.getType() == NoteType.FILE) {
+                // If a new file was uploaded, replace the existing one
+                if (newFileBytes != null && newFileBytes.length > 0) {
+                    String extension = newFileName.substring(newFileName.lastIndexOf('.') + 1);
+                    String newPath = "/var/lib/raw-notes/files/" + note.getId() + "." + extension;
+                    dbService.saveFile(newFileBytes, newPath);
+                    note.setFilePath(newPath);
+                    note.setOriginalFileName(newFileName);
+                    note.setSizeBytes(newFileBytes.length);
+                    note.setContentType(newContentType);
+                }
+            } else {
+                // For TEXT, SNIPPET, LINK: update the text content
+                if (newContent != null) {
+                    note.setTextContent(newContent);
+                }
+            }
+
+            note.setModifiedAt(LocalDateTime.now());
+            dbService.updateNote(note);
+
+            // Redirect to the detail page
+            HttpResponse res = new HttpResponse();
+            res.setProtocol("HTTP/1.1");
+            res.setResponseCode(303);
+            res.setReasonPhrase("See Other");
+            res.setHeaders(Set.of(
+                    new Header("Location", BASE_PATH + "/note/" + noteId),
+                    new Header("Content-Length", "0")
+            ));
+            return res;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return redirect404(null);
+        }
+    }
+
+    private String getFieldName(Set<Header> headers) {
+        for (Header header : headers) {
+            if (header.getHeaderName().equalsIgnoreCase("Content-Disposition")) {
+                String value = header.getHeaderValue();
+                // Look for name="fieldName"
+                Matcher m = Pattern.compile("name=\"([^\"]+)\"").matcher(value);
+                if (m.find()) {
+                    return m.group(1);
+                }
+            }
+        }
+        return null;
     }
 
     private HttpResponse handleDownload(HttpRequest request) {

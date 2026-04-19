@@ -126,6 +126,39 @@ public class DbService {
 
     }
 
+    public void updateNote(Note note) {
+
+        var sql = """
+        UPDATE notes
+        SET
+            title = ?,
+            text_content = ?,
+            content_type = ?,
+            file_path = ?,
+            original_file_name = ?,
+            modified_at = ?,
+            size_bytes = ?
+        WHERE id = ?;
+        """;
+
+        try (var psmt = conn.prepareStatement(sql)) {
+
+            psmt.setString(1, note.getTitle());
+            psmt.setString(2, note.getTextContent());
+            psmt.setString(3, note.getContentType());
+            psmt.setString(4, note.getFilePath());
+            psmt.setString(5, note.getOriginalFileName());
+            psmt.setString(6, note.getModifiedAt().toString());
+            psmt.setInt(7, note.getSizeBytes());
+            psmt.setString(8, note.getId());
+
+            psmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void deleteNote(String id) {
         var sql = """
                 DELETE FROM notes WHERE id = ?;
